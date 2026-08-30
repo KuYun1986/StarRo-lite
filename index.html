@@ -263,9 +263,7 @@ a{color:#77a9ff}
 <body><div class="wrap">
 <h1>模擬器</h1>
 <div class="topnav" style="display:flex;gap:8px;flex-wrap:wrap"><a class="game-page-link" href="index.html">🏠 主頁</a><a class="game-page-link" href="collection.html">📚 收藏區</a></div>
-<div class="sub">主頁僅保留掉落率、卡片分解、精煉箱、SSS評級、+20→+30精煉</div>
-
-
+<div class="sub">主頁僅保留掉落率、完整符文試算、精煉箱、SSS評級、+20→+30精煉</div>
 <section class="card" id="dropRateSimulator">
 <h2>🎁 掉落率計算器</h2>
 <p class="tiny">
@@ -280,7 +278,7 @@ a{color:#77a9ff}
 </div>
 <div class="row">
 <span>卡片掉落率</span>
-<input id="dropCardRate" min="0" step="0.01" type="number" value="141"/>
+<input id="dropCardRate" min="0" step="0.01" type="number" value="77.13"/>
 <span>%</span>
 </div>
 <div class="row">
@@ -301,36 +299,8 @@ a{color:#77a9ff}
 <div class="statgrid" id="dropRateResult" style="margin-top:12px"></div>
 <div id="dropRateDetail" style="margin-top:10px"></div>
 </section>
-<section class="card" id="cardDecomposeSimulator">
-<h2>🧩 卡片分解模擬</h2>
-<p class="tiny">
-依幻境火3試算。<br/>
-每 <b>30 張卡片</b>可分解 1 次，每次有 <b>25%</b> 機率獲得 1 個完整符文；分解結果以<b>期望值</b>顯示。
-</p>
-<div class="row">
-<span>技能範圍 / 10分鐘殺怪量</span>
-<select id="decomposeRange">
-<option value="6250">颶風 19×19｜6,250 隻</option>
-<option value="5200">白虎 15×15｜5,200 隻（暫估）</option>
-<option value="4800">圓桌 / 爆破 / 炸藥 13×13｜4,800 隻</option>
-</select>
-<span></span>
-</div>
-<div class="row">
-<span>掉卡率</span>
-<input id="decomposeDropRate" min="0" step="0.01" type="number" value="77.13"/>
-<span>%</span>
-</div>
-<div class="actions">
-<button class="primary" onclick="simulateDecomposeMinutes(10)">模擬 10 分鐘</button>
-<button onclick="simulateDecomposeMinutes(30)">模擬 30 分鐘</button>
-<button onclick="simulateDecomposeMinutes(60)">模擬 1 小時</button>
-<button onclick="resetDecompose()">清除紀錄</button>
-</div>
-<div class="statgrid" id="decomposeNow" style="margin-top:12px"></div>
-<div id="decomposeStats" style="margin-top:10px"></div>
-<div class="stat" style="margin-top:14px">
-<span class="label">完整符文試算</span>
+<section class="card" id="cardDecomposeSimulator"><h2>🧩 完整符文試算</h2><div class="stat" style="margin-top:14px">
+
 <div class="row" style="margin-top:10px">
 <span>卡片張數</span>
 <input id="manualRuneCards" min="0" step="1" type="number" value="5000"/>
@@ -341,9 +311,7 @@ a{color:#77a9ff}
 </div>
 <div class="statgrid" id="manualRuneResult" style="margin-top:12px"></div>
 <div id="manualRuneDetail" style="margin-top:10px"></div>
-</div>
-</section>
-
+</div></section>
 <section class="card">
 <h2>🧰 精煉箱</h2>
 <p class="tiny">每抽消耗 <b>750 P</b>。隨機獲得一個精煉鎚，可一次開啟 10 / 100 / 1000 箱。</p>
@@ -370,8 +338,6 @@ a{color:#77a9ff}
 <div class="statgrid" id="refineBoxStats" style="margin-top:10px"></div>
 <div id="refineBoxDist" style="margin-top:10px"></div>
 </section>
-
-
 <section class="card">
 <h2>🏆 SSS評級系統</h2>
 <p class="tiny">每次評級成功機率 <b>15%</b>。</p>
@@ -405,12 +371,6 @@ a{color:#77a9ff}
 <div id="refine30Now" style="margin-top:10px"></div>
 <div id="refine30Stats" style="margin-top:10px"></div>
 </section>
-
-
-
-
-
-
 </div>
 <script>
 // ===== Firebase 即時戰報橋接 =====
