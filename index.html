@@ -1,0 +1,3311 @@
+<!DOCTYPE html>
+
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<meta content="#0d1020" name="theme-color"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="繁星機率" name="apple-mobile-web-app-title"/>
+<title>模擬器</title>
+<style>
+:root{--bg:#0d1020;--card:#171b31;--card2:#202641;--text:#f5f7ff;--muted:#aab2d5;--accent:#ffd76a;--ok:#7ee0a1;--bad:#ff8b91;--line:#323a61}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#0b0e1b,#11162a);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif}
+.wrap{max-width:920px;margin:auto;padding:20px 14px 60px}h1{font-size:26px;margin:8px 0}.sub,.tiny{color:var(--muted)}.tiny{font-size:13px}
+.card{background:#171b31;border:1px solid var(--line);border-radius:18px;padding:16px;margin:12px 0}
+.row{display:grid;grid-template-columns:1.5fr .7fr auto;gap:9px;align-items:center;margin:9px 0}
+input,select,button{font:inherit;border-radius:11px;border:1px solid var(--line);padding:11px;background:#0f1428;color:var(--text);min-width:0}
+button{cursor:pointer;background:var(--card2);font-weight:700}button.primary{background:var(--accent);color:#28200a;border:0}.danger{color:#ffc2c5}
+.actions,.preset{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.preset button{padding:8px 11px}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}.stat{background:#10152a;border-radius:13px;padding:12px}.stat b{font-size:19px;display:block;margin-top:4px}.label{color:var(--muted);font-size:13px}
+.ok{color:var(--ok)}.bad{color:var(--bad)}.flow{padding:10px 0;border-bottom:1px solid var(--line)}.badge{display:inline-block;background:#292f4d;padding:4px 8px;border-radius:999px;font-size:12px;color:var(--accent)}
+@media(max-width:620px){.row{grid-template-columns:1fr 90px auto}.statgrid{grid-template-columns:repeat(2,1fr)}h1{font-size:23px}}
+
+/* ===== Modern UI v1 — visual override only ===== */
+:root{
+  --bg:#080c12;--card:#10161e;--card2:#151c26;--line:#27313d;
+  --text:#f4f7fb;--muted:#8f9bad;--accent:#55d35a;--blue:#67a0ff;
+  --gold:#ffc42d;--danger:#ff5c42;--violet:#d06cff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0!important;
+  background:
+    radial-gradient(circle at 15% -10%,rgba(48,90,130,.18),transparent 28%),
+    linear-gradient(180deg,#070a0f,#0b1017 42%,#080c12)!important;
+  color:var(--text)!important;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif!important;
+}
+.wrap{max-width:1320px!important;padding:22px!important}
+h1{
+  font-size:30px!important;margin:4px 0 20px!important;letter-spacing:.5px;
+  display:flex;align-items:center;gap:10px
+}
+h1:before{content:"✦";display:grid;place-items:center;width:40px;height:40px;border:1px solid #d83b32;border-radius:9px}
+h2{font-size:21px!important;margin:0 0 14px!important}
+.sub,.tiny{color:var(--muted)!important}
+.card{
+  background:linear-gradient(145deg,rgba(20,27,36,.97),rgba(12,17,24,.98))!important;
+  border:1px solid var(--line)!important;border-radius:14px!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.22)!important;
+  padding:20px!important;margin:14px 0!important
+}
+.row{gap:12px!important}
+input,select{
+  background:#0b1119!important;color:var(--text)!important;border:1px solid #34404e!important;
+  border-radius:9px!important;min-height:42px
+}
+button{
+  background:linear-gradient(180deg,#1b2430,#141b25)!important;
+  color:#f5f7fb!important;border:1px solid #3a4654!important;border-radius:8px!important;
+  min-height:42px;padding:9px 16px!important;font-weight:700!important;
+  transition:.15s transform,.15s border-color,.15s filter
+}
+button:hover{transform:translateY(-1px);border-color:#667587!important;filter:brightness(1.08)}
+button.primary{
+  background:linear-gradient(180deg,#268d34,#176c26)!important;border-color:#319842!important;
+  box-shadow:0 0 18px rgba(50,190,72,.12)
+}
+.actions{display:flex;flex-wrap:wrap;gap:9px!important;margin-top:12px!important}
+.stat{
+  background:linear-gradient(180deg,rgba(17,24,34,.96),rgba(11,16,23,.96))!important;
+  border:1px solid #28323e!important;border-radius:10px!important;padding:14px!important
+}
+.label{color:#aab5c4!important;font-weight:700}
+.ok{color:#57dc67!important}.bad{color:#ff654d!important}
+hr{border:0;border-top:1px solid var(--line)!important}
+table{width:100%;border-collapse:collapse}
+th,td{border-bottom:1px solid #27313b!important;padding:11px 8px!important}
+th{color:#aeb9c8;text-align:left}
+a{color:#77a9ff}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#354252;border-radius:8px}
+::-webkit-scrollbar-track{background:#0b1017}
+
+/* Main feature cards become a responsive dashboard */
+@media(min-width:980px){
+  body .wrap{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 14px}
+  body .wrap>h1,body .wrap>.sub,body .wrap>p,body .wrap>header{grid-column:1/-1}
+  body .wrap>.card{min-width:0}
+  /* Keep dense / broad simulator cards full width */
+  body .wrap>.card:has(h2:nth-child(1)){align-self:start}
+  body .wrap>.card:has(h2:nth-child(1):not(:only-child)){ }
+  body .wrap>.card:has(h2:where(:not(:empty))){ }
+}
+/* Specific large sections stay full width for readability */
+.card:has(h2:nth-child(1)){}
+
+/* Dragon and weapon cards get dashboard emphasis */
+.card:has(h2:nth-child(1)){position:relative;overflow:hidden}
+.card:has(h2:nth-child(1))::after{
+  content:"";position:absolute;inset:0 0 auto 0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(103,160,255,.45),transparent);pointer-events:none
+}
+
+@media(max-width:720px){
+  .wrap{padding:12px!important}
+  h1{font-size:23px!important}
+  .card{padding:15px!important;border-radius:12px!important}
+  .actions button{flex:1 1 130px}
+}
+
+
+.mq-wheel-wrap{
+  position:relative;
+  width:min(330px,82vw);
+  aspect-ratio:1/1;
+  margin-left:auto;
+  margin-right:auto;
+  display:grid;
+  place-items:center;
+}
+.mq-pointer{
+  position:absolute;
+  top:-8px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:4;
+  font-size:30px;
+  color:#fff;
+  text-shadow:0 2px 8px rgba(0,0,0,.8);
+}
+.mq-wheel{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  position:relative;
+  border:8px solid #243247;
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,.08),0 8px 30px rgba(0,0,0,.28);
+  transition:transform 2.2s cubic-bezier(.12,.78,.18,1);
+  background:
+    conic-gradient(
+      #dd7b2d 0.000000deg 13.846154deg,
+      #d63c3c 13.846154deg 41.538461deg,
+      #8b52c7 41.538461deg 69.230769deg,
+      #d63c3c 69.230769deg 96.923077deg,
+      #f1d46a 96.923077deg 124.615385deg,
+      #d63c3c 124.615385deg 152.307692deg,
+      #3fa55b 152.307692deg 180.000000deg,
+      #3e78cf 180.000000deg 193.846154deg,
+      #d63c3c 193.846154deg 221.538461deg,
+      #f1d46a 221.538461deg 249.230769deg,
+      #d63c3c 249.230769deg 276.923077deg,
+      #3fa55b 276.923077deg 304.615385deg,
+      #d63c3c 304.615385deg 332.307692deg,
+      #f1d46a 332.307692deg 360.000000deg
+    );
+}
+
+.mq-wheel-center{ z-index:3; }
+
+.mq-wheel::after{
+  content:"";
+  position:absolute;
+  inset:10%;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.24);
+  pointer-events:none;
+}
+.mq-wheel-center{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:31%;
+  aspect-ratio:1/1;
+  border-radius:50%;
+  background:#0c1420;
+  border:4px solid #d2ad4f;
+  display:grid;
+  place-items:center;
+  color:#f7d77a;
+  font-weight:800;
+  letter-spacing:.12em;
+  box-shadow:0 0 20px rgba(0,0,0,.45);
+}
+
+
+.baccarat-bets label{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  font-size:13px;
+}
+.baccarat-bets input{
+  width:100%;
+  box-sizing:border-box;
+}
+@media(max-width:640px){
+  .baccarat-bets{grid-template-columns:1fr !important;}
+}
+
+
+.wheel-log-bets label{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  font-size:13px;
+}
+.wheel-log-bets input{
+  width:100%;
+  box-sizing:border-box;
+}
+@media(max-width:640px){
+  .wheel-log-bets{grid-template-columns:repeat(2,minmax(0,1fr)) !important;}
+}
+
+</style>
+<meta content="繁星仙境模擬器" property="og:title"/>
+<meta content="古雲防上頭用V777（機率僅供參考，實際依遊戲為主）" property="og:description"/>
+<meta content="website" property="og:type"/>
+<meta content="https://kuyun1986.github.io/StarRo-simulator/" property="og:url"/>
+<meta content="https://kuyun1986.github.io/StarRo-simulator/preview.png" property="og:image"/>
+<meta content="summary_large_image" name="twitter:card"/>
+<meta content="繁星仙境模擬器" name="twitter:title"/>
+<meta content="古雲防上頭用V777（機率僅供參考，實際依遊戲為主）" name="twitter:description"/>
+<meta content="https://kuyun1986.github.io/StarRo-simulator/preview.png" name="twitter:image"/>
+<link href="preview.png" rel="icon" type="image/png"/>
+<link href="preview.png" rel="apple-touch-icon"/>
+<style>
+.tier-top-red{color:#ff4d4f!important;font-weight:800}
+</style>
+<style>
+.game-page-link,.game-nav-link{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:10px 16px;border-radius:12px;border:1px solid var(--line);
+  background:var(--card);color:var(--text);text-decoration:none;font-weight:700;
+}
+.game-page-link:hover,.game-nav-link:hover{filter:brightness(1.08)}
+</style>
+<style>
+.main-game-hidden{display:none!important}
+</style>
+<style>
+.refine-gray{color:#b8c0cc;font-weight:700}
+.refine-silver{color:#d8dee8;font-weight:700}
+.refine-gold{color:#f0b94b;font-weight:700}
+.refine-green{color:#52d273;font-weight:700}
+.refine-legendary-gold{color:#ffd84d;font-weight:900;text-shadow:0 0 8px rgba(255,216,77,.22)}
+</style>
+<style>
+.drop-checks{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.drop-checks label{
+  display:inline-flex;align-items:center;gap:7px;
+  background:#0b1119;border:1px solid #34404e;border-radius:9px;
+  padding:10px 13px;color:var(--text);font-weight:700;cursor:pointer
+}
+.drop-checks input[type="checkbox"]{
+  width:18px;height:18px;min-height:auto;accent-color:#55d35a
+}
+</style>
+</head>
+<body><div class="wrap">
+<h1>模擬器</h1>
+<div class="topnav" style="display:flex;gap:8px;flex-wrap:wrap"><a class="game-page-link" href="index.html">🏠 主頁</a><a class="game-page-link" href="collection.html">📚 收藏區</a></div>
+<div class="sub">主頁僅保留掉落率、卡片分解、精煉箱、SSS評級、+20→+30精煉</div>
+
+
+<section class="card" id="dropRateSimulator">
+<h2>🎁 掉落率計算器</h2>
+<p class="tiny">
+<span style="color:#ff5f6d;font-weight:800;display:block;margin-bottom:6px">1% 基礎掉落率道具</span>
+<span>固定條件：伺服器倍率 1、卡片掉落內建 100%。</span><br/>
+</p>
+<div class="drop-checks">
+<label><input checked="" id="dropUseDream" type="checkbox"/> 幻境：+200%掉落率</label>
+<label><input checked="" id="dropUseDaidai" type="checkbox"/> 呆呆：掉落率 +100%</label>
+<label><input checked="" id="dropUseCandy" type="checkbox"/> 超黏掉寶糖：+200%掉落率</label>
+<label><input checked="" id="dropUseEvil" type="checkbox"/> 惡波卷：卡片掉落 +200%</label>
+</div>
+<div class="row">
+<span>卡片掉落率</span>
+<input id="dropCardRate" min="0" step="0.01" type="number" value="141"/>
+<span>%</span>
+</div>
+<div class="row">
+<span>基礎掉落率</span>
+<input id="dropEquipRate" min="0" step="1" type="number" value="183"/>
+<span>%</span>
+</div>
+<div class="actions" style="margin-top:12px">
+<button class="primary" onclick="calcDropRate()">🧮 計算掉落率</button>
+</div>
+<div class="stat" style="margin-top:12px">
+<span class="label">計算公式</span>
+<div class="tiny" style="line-height:1.9;margin-top:6px">
+    (基礎掉落率 × (100% + 幻境 200%※勾選) × 卡片掉落率)<br/>
+    × (伺服器倍率 + DAIDAI + 基礎掉落率 + 超黏掉寶糖)
+  </div>
+</div>
+<div class="statgrid" id="dropRateResult" style="margin-top:12px"></div>
+<div id="dropRateDetail" style="margin-top:10px"></div>
+</section>
+<section class="card" id="cardDecomposeSimulator">
+<h2>🧩 卡片分解模擬</h2>
+<p class="tiny">
+依幻境火3試算。<br/>
+每 <b>30 張卡片</b>可分解 1 次，每次有 <b>25%</b> 機率獲得 1 個完整符文；分解結果以<b>期望值</b>顯示。
+</p>
+<div class="row">
+<span>技能範圍 / 10分鐘殺怪量</span>
+<select id="decomposeRange">
+<option value="6250">颶風 19×19｜6,250 隻</option>
+<option value="5200">白虎 15×15｜5,200 隻（暫估）</option>
+<option value="4800">圓桌 / 爆破 / 炸藥 13×13｜4,800 隻</option>
+</select>
+<span></span>
+</div>
+<div class="row">
+<span>掉卡率</span>
+<input id="decomposeDropRate" min="0" step="0.01" type="number" value="77.13"/>
+<span>%</span>
+</div>
+<div class="actions">
+<button class="primary" onclick="simulateDecomposeMinutes(10)">模擬 10 分鐘</button>
+<button onclick="simulateDecomposeMinutes(30)">模擬 30 分鐘</button>
+<button onclick="simulateDecomposeMinutes(60)">模擬 1 小時</button>
+<button onclick="resetDecompose()">清除紀錄</button>
+</div>
+<div class="statgrid" id="decomposeNow" style="margin-top:12px"></div>
+<div id="decomposeStats" style="margin-top:10px"></div>
+<div class="stat" style="margin-top:14px">
+<span class="label">完整符文試算</span>
+<div class="row" style="margin-top:10px">
+<span>卡片張數</span>
+<input id="manualRuneCards" min="0" step="1" type="number" value="5000"/>
+<span>張</span>
+</div>
+<div class="actions" style="margin-top:10px">
+<button class="primary" onclick="calcManualRunes()">試算完整符文</button>
+</div>
+<div class="statgrid" id="manualRuneResult" style="margin-top:12px"></div>
+<div id="manualRuneDetail" style="margin-top:10px"></div>
+</div>
+</section>
+
+<section class="card">
+<h2>🧰 精煉箱</h2>
+<p class="tiny">每抽消耗 <b>750 P</b>。隨機獲得一個精煉鎚，可一次開啟 10 / 100 / 1000 箱。</p>
+<div class="stat" style="margin-top:10px">
+<span class="label">內容物 / 機率</span>
+<div class="tiny" style="line-height:1.9;margin-top:6px">
+    (小灰) 神工匠的鐵鎚：16.67%<br/>
+    (大灰) 極限神工匠的鐵鎚：16.67%<br/>
+    (-1灰槌) 乙太神工匠的鐵鎚：16.67%<br/>
+    (小金) 高密度乙太神工匠的鐵鎚：13.33%<br/>
+    (-1金槌) 極限乙太神工匠的鐵鎚：13.33%<br/>
+<span class="refine-gold">(大金) 高密度極限乙太神工匠的鐵鎚</span>：10.00%<br/>
+<span class="refine-green">(傳說-1綠) 傳說乙太神工匠的鐵鎚</span>：10.00%<br/>
+<span class="refine-legendary-gold">(傳說大金) 高密度傳說乙太神工匠的鐵鎚</span>：3.33%
+  </div>
+</div>
+<div class="actions" style="margin-top:10px">
+<button class="primary" onclick="refineBoxOpen(10)">開 10 箱</button>
+<button onclick="refineBoxOpen(100)">開 100 箱</button>
+<button onclick="refineBoxOpen(1000)">開 1000 箱</button>
+<button onclick="refineBoxReset()">清除紀錄</button>
+</div>
+<div id="refineBoxNow" style="margin-top:12px"></div>
+<div class="statgrid" id="refineBoxStats" style="margin-top:10px"></div>
+<div id="refineBoxDist" style="margin-top:10px"></div>
+</section>
+
+
+<section class="card">
+<h2>🏆 SSS評級系統</h2>
+<p class="tiny">每次評級成功機率 <b>15%</b>。</p>
+<div class="actions">
+<button class="primary" onclick="sssBatch(1)">評級 1 次</button>
+<button onclick="sssBatch(10)">評級 10 次</button>
+<button onclick="sssUntilSuccess()">洗到 SSS</button>
+<button onclick="sssReset()">清除紀錄</button>
+</div>
+<div id="sssNow" style="margin-top:12px"></div>
+<div id="sssStats" style="margin-top:10px"></div>
+</section>
+<section class="card">
+<h2>🔨 +20 → +30 精煉模擬</h2>
+<p class="tiny">⭐ 若從 +20 開始累計 <b>200 把精煉槌內</b> 達成 +30，會送上全服即時戰報。</p>
+<p class="tiny">每把武器從 <b>+20</b> 開始；每次精煉都消耗 <b>1 把精煉槌</b>。失敗維持原精煉值，成功才進到下一階。每次按 10 / 100 把精煉槌都會從「目前精煉值」繼續往上敲，進度不會重置；可一路累積到 +30。</p>
+<div class="stat" style="margin-top:10px">
+<span class="label">各階成功率</span>
+<div class="tiny" style="line-height:1.9;margin-top:6px">
+    +20→+21：75%　｜　+21→+22：50%　｜　+22→+23：25%　｜　+23→+24：10%　｜　+24→+25：5%<br/>
+    +25→+26：3%　｜　+26→+27：2%　｜　+27→+28：1%　｜　+28→+29：1%　｜　+29→+30：1%
+  </div>
+<div class="tiny" style="margin-top:5px">理論平均：約 <b>420.7 把精煉槌／武器</b> 才能從 +20 到 +30。</div>
+</div>
+<div class="actions" style="margin-top:10px">
+<button class="primary" onclick="refine30One()">敲到 +30</button>
+<button onclick="refine30Batch(10)">10 把精煉槌</button>
+<button onclick="refine30Batch(100)">100 把精煉槌</button>
+<button onclick="refine30Reset()">重置</button>
+</div>
+<div id="refine30Now" style="margin-top:10px"></div>
+<div id="refine30Stats" style="margin-top:10px"></div>
+</section>
+
+
+
+
+
+
+</div>
+<script>
+// ===== Firebase 即時戰報橋接 =====
+function starroAnnounce(type,result,detail=""){
+  if(typeof window.starroBroadcast==="function"){
+    window.starroBroadcast(type,result,detail);
+  }
+}
+
+const defaults=[{name:"精煉 1%",rate:1},{name:"精煉 2%",rate:2},{name:"華金洗詞第一階段",rate:50},{name:"華金洗詞第二階段",rate:10},{name:"附魔 5 等",rate:15}];
+let steps=[{name:"精煉 1%",rate:1}];
+function custom(){try{return JSON.parse(localStorage.getItem("starChanceCustom")||"[]")}catch(e){return[]}}
+function allItems(){return defaults.concat(custom())}
+function refreshSelect(){singleItem.innerHTML="";allItems().forEach((x,i)=>singleItem.add(new Option(`${x.name}（${x.rate}%）`,i)));syncSingle()}
+function syncSingle(){let x=allItems()[+singleItem.value]||defaults[0];singleRate.value=x.rate}
+function setTrials(n){singleTrials.value=n}
+function pct(x){return x.toLocaleString(undefined,{maximumFractionDigits:6})+"%"}
+function card(l,v,c=""){return `<div class="stat"><span class="label">${l}</span><b class="${c}">${v}</b></div>`}
+function runSingle(){let p=Math.max(0,Math.min(100,+singleRate.value))/100,n=Math.max(1,Math.min(1000000,+singleTrials.value||1)),s=0,first=0,st=0,max=0;for(let i=1;i<=n;i++){if(Math.random()<p){s++;if(!first)first=i;st=0}else{st++;max=Math.max(max,st)}}singleResult.innerHTML=card("成功",s.toLocaleString(),"ok")+card("失敗",(n-s).toLocaleString(),"bad")+card("實際成功率",pct(s/n*100))+card("理論成功率",pct(p*100))+card("第一次成功",first?`第 ${first.toLocaleString()} 次`:"未成功")+card("最長連敗",max+" 次")+card("理論平均",p?(1/p).toLocaleString(undefined,{maximumFractionDigits:2})+" 次":"∞")}
+function esc(s){return String(s).replaceAll("&","&amp;").replaceAll('"',"&quot;").replaceAll("<","&lt;").replaceAll(">","&gt;")}
+function renderSteps(){stepsDiv=document.getElementById("steps");if(!stepsDiv)return;stepsDiv.innerHTML="";steps.forEach((x,i)=>{let d=document.createElement("div");d.className="row flow";d.innerHTML=`<input value="${esc(x.name)}" oninput="steps[${i}].name=this.value"><input type="number" min="0" max="100" step="0.0001" value="${x.rate}" oninput="steps[${i}].rate=+this.value;updateTheory()"><button class="danger" onclick="removeStep(${i})">刪除</button>`;stepsDiv.appendChild(d)});updateTheory()}
+function addPreset(n,r){steps.push({name:n,rate:r});renderSteps()} function removeStep(i){steps.splice(i,1);renderSteps()} function clearSteps(){steps=[];renderSteps();let e=document.getElementById("flowResult");if(e)e.innerHTML=""}
+function theoryRate(){return steps.reduce((a,x)=>a*Math.max(0,Math.min(100,+x.rate))/100,1)}
+function updateTheory(){let p=theoryRate();let theoryEl=document.getElementById("theory");if(!theoryEl)return;theoryEl.innerHTML=steps.length?`<span class="badge">理論全過 ${pct(p*100)}</span> <span class="tiny">平均約 ${p?(1/p).toLocaleString(undefined,{maximumFractionDigits:2}):"∞"} 次流程 / 1件</span>`:"<span class='tiny'>請新增階段</span>"}
+function runFlow(){if(!steps.length)return alert("請先新增階段");let flowTrialsEl=document.getElementById("flowTrials"),flowResultEl=document.getElementById("flowResult");if(!flowTrialsEl||!flowResultEl)return;let n=Math.max(1,Math.min(1000000,+flowTrialsEl.value||1)),s=0,first=0,st=0,max=0;for(let i=1;i<=n;i++){let ok=true;for(const x of steps){if(Math.random()>=Math.max(0,Math.min(100,+x.rate))/100){ok=false;break}}if(ok){s++;if(!first)first=i;st=0}else{st++;max=Math.max(max,st)}}let p=theoryRate();flowResultEl.innerHTML=card("全過成品",s.toLocaleString(),"ok")+card("失敗流程",(n-s).toLocaleString(),"bad")+card("實際全過率",pct(s/n*100))+card("理論全過率",pct(p*100))+card("第一次全過",first?`第 ${first.toLocaleString()} 次`:"未出現")+card("最長連敗",max+" 次")}
+function saveCustom(){let n=newName.value.trim(),r=+newRate.value;if(!n||isNaN(r)||r<0||r>100)return alert("請輸入名稱與 0～100% 機率");let a=custom();a.push({name:n,rate:r});localStorage.setItem("starChanceCustom",JSON.stringify(a));newName.value="";newRate.value="";refreshSelect();alert("已儲存")}
+function resetCustom(){if(confirm("確定清除自訂項目？")){localStorage.removeItem("starChanceCustom");refreshSelect()}}
+
+let randomCounts={};
+let randomDraws=0;
+function drawRandomValue(){
+ let mn=Math.floor(+randomMin.value), mx=Math.floor(+randomMax.value);
+ if(!Number.isFinite(mn)||!Number.isFinite(mx)||mn>mx)return alert("請確認最小值與最大值");
+ let value;
+ if(mn===1 && mx===15){
+   value=weightedFinalDamage();
+ }else{
+   value=Math.floor(Math.random()*(mx-mn+1))+mn;
+ }
+ randomDraws++;
+ randomCounts[value]=(randomCounts[value]||0)+1;
+ randomNow.innerHTML=`<div class="stat"><span class="label">本次抽到</span><b class="ok" style="font-size:32px">全技能終傷 +${value}%</b><span class="tiny">四區間推定模式｜+1～5：95%｜+6～10：4.5%｜+11～14：0.45%｜+15：0.05%</span></div>`;
+ renderRandomStats(mn,mx);
+}
+function renderRandomStats(mn,mx){
+ let entries=[];
+ for(let i=mn;i<=mx;i++) if(randomCounts[i]) entries.push([i,randomCounts[i]]);
+ entries.sort((a,b)=>b[1]-a[1]||a[0]-b[0]);
+ let most=entries.length?`+${entries[0][0]}%（${entries[0][1]}次）`:"—";
+ randomStats.innerHTML=card("已抽次數",randomDraws.toLocaleString())+
+ card("目前最常出現",most)+
+ card("可抽範圍",`+${mn}% ～ +${mx}%`);
+ if(entries.length){
+   randomStats.innerHTML += `<div class="stat" style="grid-column:1/-1"><span class="label">抽取分布</span><div style="margin-top:8px;line-height:1.9">${entries.sort((a,b)=>a[0]-b[0]).map(x=>`+${x[0]}%：${x[1]} 次（${(x[1]/randomDraws*100).toFixed(2)}%）`).join("　")}</div></div>`;
+ }
+}
+function resetRandomStats(){randomCounts={};randomDraws=0;randomNow.innerHTML="";randomStats.innerHTML=""}
+
+
+function huajinLine1(){
+ return `${pick(["STR","AGI","VIT","INT","DEX","LUK"])} +${randint(1,10)}`;
+}
+function huajinLine2(){
+ let k=pick(["P.ATK","S.MATK","C.RATE"]);
+ return `${k} +${randint(1,10)}`;
+}
+
+let hj={tries:0,pass50:0,pass10:0,values:{},top3:[]};
+function weightedFinalDamage(){
+ const groups=[
+   {min:1,max:5,w:95},
+   {min:6,max:10,w:4.5},
+   {min:11,max:14,w:0.45},
+   {min:15,max:15,w:0.05}
+ ];
+ let total=groups.reduce((s,g)=>s+g.w,0);
+ let r=Math.random()*total,chosen=groups[0];
+ for(const g of groups){r-=g.w;if(r<0){chosen=g;break}}
+ return Math.floor(Math.random()*(chosen.max-chosen.min+1))+chosen.min;
+}
+function huajinTrial(show=true){
+ hj.tries++;
+ if(Math.random()>=0.50){
+   if(show) huajinNow.innerHTML=`<div class="stat"><span class="label">本次結果</span><b class="bad">❌ 50% 失敗</b></div>`;
+   return;
+ }
+ hj.pass50++;
+ if(Math.random()>=0.10){
+   if(show) huajinNow.innerHTML=`<div class="stat"><span class="label">本次結果</span><b class="bad">✅ 50% → ❌ 10% 失敗</b></div>`;
+   return;
+ }
+ hj.pass10++;
+ const v=weightedFinalDamage();
+ if(v===15) starroSaiGaoBroadcast("華金鎧甲／戰靴","全技能終傷 +15%",hj.tries,huajinCost.value);
+ hj.values[v]=(hj.values[v]||0)+1;
+ const l1=huajinLine1(),l2=huajinLine2();
+ hj.top3.push({value:v,lines:[l1,l2,`全技能終傷 +${v}%`]});
+ if(show){
+   huajinNow.innerHTML=`<div class="stat"><span class="label">本次完整 3 詞</span><div style="font-size:20px;line-height:1.8"><b>${l1}</b><br><b>${l2}</b><br><b class="ok">全技能終傷 +${v}%</b></div><span class="tiny">只有成功出現第 3 詞時才顯示完整三條</span></div>`;
+ }
+}
+function runHuajinOnce(){huajinTrial(true);renderHuajin()}
+function runHuajinBatch(n){
+ let lastSuccess=null;
+ for(let i=0;i<n;i++){let before=hj.pass10;huajinTrial(false);if(hj.pass10>before){let keys=Object.keys(hj.values);lastSuccess=keys.length?keys[keys.length-1]:null}}
+ huajinNow.innerHTML=`<div class="stat"><span class="label">批次完成</span><b>已連洗 ${n} 次</b></div>`;
+ renderHuajin();
+}
+function renderHuajin(){
+ let t=hj.tries||1;
+ huajinStats.innerHTML=
+ card("總洗詞次數",hj.tries.toLocaleString())+
+ card("累計花費",(hj.tries*Math.max(0,+huajinCost.value||0)).toLocaleString()+" 紅利")+
+ card("通過 50%",hj.pass50.toLocaleString(),"ok")+
+ card("通過 10%",hj.pass10.toLocaleString(),"ok")+
+ card("50% 實際通過率",pct(hj.pass50/t*100))+
+ card("最終進入抽值率",pct(hj.pass10/t*100))+
+ card("理論進入抽值率","5%")+
+ card("每次洗詞",Math.max(0,+huajinCost.value||0).toLocaleString()+" 紅利")+
+ card("每次成功平均花費",hj.pass10?Math.round(hj.tries*Math.max(0,+huajinCost.value||0)/hj.pass10).toLocaleString()+" 紅利":"—")+
+ card("理論平均成功成本",(Math.max(0,+huajinCost.value||0)/0.05).toLocaleString()+" 紅利");
+ let parts=[];
+ for(let v=1;v<=15;v++) if(hj.values[v]) parts.push(`+${v}%：${hj.values[v]} 次`);
+ let top10=(hj.top3||[]).slice().sort((a,b)=>b.value-a.value).slice(0,10);
+ huajinDist.innerHTML=(top10.length?`<div class="stat"><span class="label">⭐ 詞條數值最高 TOP 10</span><div style="margin-top:8px">${top10.map((x,i)=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>#${i+1}</b><br>${x.lines.join("<br>")}</div>`).join("")}</div></div>`:"")+(parts.length?`<div class="stat" style="margin-top:8px"><span class="label">成功後終傷分布</span><div style="margin-top:8px;line-height:1.9">${parts.join("　")}</div></div>`:"");
+}
+function resetHuajin(){hj={tries:0,pass50:0,pass10:0,values:{},top3:[]};huajinNow.innerHTML="";huajinStats.innerHTML="";huajinDist.innerHTML=""}
+
+
+let acc={tries:0,pass50:0,pass10:0,values:{},top3:[]};
+function weightedSkillDamage(){
+ const groups=[
+   {min:1,max:5,w:95},
+   {min:6,max:10,w:4.5},
+   {min:11,max:19,w:0.5},
+   {min:20,max:20,w:0.1}
+ ];
+ let total=groups.reduce((s,g)=>s+g.w,0);
+ let r=Math.random()*total,chosen=groups[0];
+ for(const g of groups){r-=g.w;if(r<0){chosen=g;break}}
+ return Math.floor(Math.random()*(chosen.max-chosen.min+1))+chosen.min;
+}
+function accessoryTrial(show=true){
+ acc.tries++;
+ if(Math.random()>=0.50){
+   if(show) accessoryNow.innerHTML=`<div class="stat"><span class="label">本次結果</span><b class="bad">❌ 50% 失敗</b></div>`;
+   return;
+ }
+ acc.pass50++;
+ if(Math.random()>=0.10){
+   if(show) accessoryNow.innerHTML=`<div class="stat"><span class="label">本次結果</span><b class="bad">✅ 50% → ❌ 10% 失敗</b></div>`;
+   return;
+ }
+ acc.pass10++;
+ const v=weightedSkillDamage();
+ if(v===20) starroSaiGaoBroadcast("華金耳環／飾品","全技能傷害 +20%",acc.tries,accessoryCost.value);
+ acc.values[v]=(acc.values[v]||0)+1;
+ const l1=huajinLine1(),l2=huajinLine2();
+ acc.top3.push({value:v,lines:[l1,l2,`全技能傷害 +${v}%${starroMaxTag(v===20)}`]});
+ if(show){
+   accessoryNow.innerHTML=`<div class="stat"><span class="label">本次完整 3 詞</span><div style="font-size:20px;line-height:1.8"><b>${l1}</b><br><b>${l2}</b><br><b class="ok">全技能傷害 +${v}%${starroMaxTag(v===20)}</b></div><span class="tiny">只有成功出現第 3 詞時才顯示完整三條</span></div>`;
+ }
+}
+function runAccessoryOnce(){accessoryTrial(true);renderAccessory()}
+function runAccessoryBatch(n){
+ for(let i=0;i<n;i++) accessoryTrial(false);
+ accessoryNow.innerHTML=`<div class="stat"><span class="label">批次完成</span><b>已連洗 ${n} 次</b></div>`;
+ renderAccessory();
+}
+function renderAccessory(){
+ let t=acc.tries||1,c=Math.max(0,+accessoryCost.value||0);
+ accessoryStats.innerHTML=
+ card("總洗詞次數",acc.tries.toLocaleString())+
+ card("累計花費",(acc.tries*c).toLocaleString()+" 紅利")+
+ card("通過 50%",acc.pass50.toLocaleString(),"ok")+
+ card("通過 10%",acc.pass10.toLocaleString(),"ok")+
+ card("50% 實際通過率",pct(acc.pass50/t*100))+
+ card("最終進入抽值率",pct(acc.pass10/t*100))+
+ card("理論進入抽值率","5%")+
+ card("每次洗詞",c.toLocaleString()+" 紅利")+
+ card("每次成功平均花費",acc.pass10?Math.round(acc.tries*c/acc.pass10).toLocaleString()+" 紅利":"—")+
+ card("理論平均成功成本",(c/0.05).toLocaleString()+" 紅利");
+ let parts=[];
+ for(let v=1;v<=20;v++) if(acc.values[v]) parts.push(`+${v}%：${acc.values[v]} 次`);
+ let top10=(acc.top3||[]).slice().sort((a,b)=>b.value-a.value).slice(0,10);
+ accessoryDist.innerHTML=(top10.length?`<div class="stat"><span class="label">⭐ 詞條數值最高 TOP 10</span><div style="margin-top:8px">${top10.map((x,i)=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>#${i+1}</b><br>${x.lines.join("<br>")}</div>`).join("")}</div></div>`:"")+(parts.length?`<div class="stat" style="margin-top:8px"><span class="label">成功後全技能傷害分布</span><div style="margin-top:8px;line-height:1.9">${parts.join("　")}</div></div>`:"");
+}
+function resetAccessory(){acc={tries:0,pass50:0,pass10:0,values:{},top3:[]};accessoryNow.innerHTML="";accessoryStats.innerHTML="";accessoryDist.innerHTML=""}
+
+
+const identifyTiers=[
+ {p:89.77, label:"第5詞一般（89.77%）", pool:[
+   ["對種族物理攻擊",5,10],["對種族魔法攻擊",5,10],
+   ["對屬性物理攻擊",5,10],["對屬性魔法攻擊",5,10],
+   ["全屬性物理攻擊",5,10],["全屬性魔法攻擊",5,10]
+ ]},
+ {p:8.98, label:"第5詞高級（8.98%）", pool:[
+   ["對種族物理攻擊",10,15],["對種族魔法攻擊",10,15],
+   ["對屬性物理攻擊",10,15],["對屬性魔法攻擊",10,15],
+   ["全屬性物理攻擊",10,15],["全屬性魔法攻擊",10,15]
+ ]},
+ {p:0.9, label:"第5詞稀有（0.9%）", pool:[
+   ["對種族物理攻擊",15,25],["對種族魔法攻擊",15,25],
+   ["對屬性物理攻擊",15,25],["對屬性魔法攻擊",15,25],
+   ["全屬性物理攻擊",15,25],["全屬性魔法攻擊",15,25]
+ ]},
+ {p:0.36, label:"第5詞頂級（0.36%）", pool:[
+   ["對種族物理攻擊",25,35],["對種族魔法攻擊",25,35],
+   ["對屬性物理攻擊",25,35],["對屬性魔法攻擊",25,35],
+   ["全屬性物理攻擊",25,35],["全屬性魔法攻擊",25,35]
+ ]}
+];
+let idStats={total:0,tiers:{},lines:{},fiveResults:[]};
+
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function wandLine1(){let n=randint(10,150);return `${pick(["ATK","MATK"])} +${n}`}
+function wandLine2(){
+ let type=pick(["技能後延遲","變動施法時間","ASPD"]);
+ if(type==="ASPD") return "ASPD +1";
+ return `${type} -${randint(1,20)}%`;
+}
+function wandLine3(){return `${pick(["POW","SPL","STA","WIS","CON","CRT"])} +${randint(1,5)}`}
+function wandLine4(){return `${pick(["P.ATK","S.MATK","C.RATE"])} +${randint(1,10)}`}
+
+function weightedTier(){
+ let total=identifyTiers.reduce((a,x)=>a+x.p,0),r=Math.random()*total;
+ for(const t of identifyTiers){r-=t.p;if(r<0)return t}
+ return identifyTiers[0];
+}
+function randint(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function makeLine(t){
+ let x=t.pool[Math.floor(Math.random()*t.pool.length)];
+ let value=randint(x[1],x[2]);
+ return {name:x[0],value,isMax:value===35}
+}
+function rollAccessoryIdentify(mode,show=true){
+ if(mode==="book"){
+   let t=weightedTier(),line=makeLine(t);
+   idStats.total++;idStats.tiers[t.label]=(idStats.tiers[t.label]||0)+1;
+   let key=`${line.name} +${line.value}%`;idStats.lines[key]=(idStats.lines[key]||0)+1;
+   if(line.isMax) starroSaiGaoBroadcast("飾品指定魔法書",`${line.name} +${line.value}%`,idStats.total,bookCost.value);
+   if(show) identifyNow.innerHTML=`<div class="stat"><span class="label">指定魔法書結果</span><b class="ok">${starroTierDisplayLabel(t.label)}｜${line.name} +${line.value}%${starroMaxTag(line.isMax)}</b></div>`;
+ }else{
+   // Wand: number of lines follows 100% / 75% / 50% / 25% / 10%.
+   // Interpret these as cumulative chances of having at least N lines.
+   let r=Math.random(), lines=1;
+   if(r<0.75) lines=2;
+   if(r<0.50) lines=3;
+   if(r<0.25) lines=4;
+   if(r<0.10) lines=5;
+   idStats.total++;
+   let detail=`取得 ${lines} 詞`;
+   if(lines===5){
+      let t=weightedTier(),line=makeLine(t);
+      idStats.tiers[t.label]=(idStats.tiers[t.label]||0)+1;
+      let key=`${line.name} +${line.value}%`;idStats.lines[key]=(idStats.lines[key]||0)+1;
+      idStats.fiveResults.push({
+        tier:t.label,
+        lines:[wandLine1(),wandLine2(),wandLine3(),wandLine4(),`${line.name} +${line.value}%｜${starroTierDisplayLabel(t.label)}${starroMaxTag(line.isMax)}`],
+        value:line.value,
+        isMax:line.isMax
+      });
+      if(line.isMax) starroSaiGaoBroadcast("飾品鑑定棒",`${line.name} +${line.value}%`,idStats.total,wandCost.value);
+      detail+=` → 第5詞：${starroTierDisplayLabel(t.label)}｜${line.name} +${line.value}%${starroMaxTag(line.isMax)}`;
+   }
+   if(show) identifyNow.innerHTML=`<div class="stat"><span class="label">鑑定魔法棒結果</span><b class="${lines===5?'ok':''}">${detail}</b></div>`;
+ }
+ renderIdentify();
+}
+function rollAccessoryIdentifyBatch(n){for(let i=0;i<n;i++)rollAccessoryIdentify("book",false);identifyNow.innerHTML=`<div class="stat"><span class="label">批次完成</span><b>指定魔法書已抽 ${n} 次</b></div>`;renderIdentify()}
+function renderIdentify(){
+ let tierTxt=Object.entries(idStats.tiers).map(([k,v])=>`${k}：${v} 次`).join("　");
+ let top=Object.entries(idStats.lines).sort((a,b)=>{
+   const av=+(a[0].match(/\+(\d+)%/)||[0,0])[1];
+   const bv=+(b[0].match(/\+(\d+)%/)||[0,0])[1];
+   return bv-av || b[1]-a[1];
+ }).slice(0,20);
+ let wc=Math.max(0,+wandCost.value||0);
+ identifyStats.innerHTML=card("累計抽取",idStats.total.toLocaleString())+
+ card("每次花費",wc.toLocaleString()+" 紅利")+
+ card("累計花費",(idStats.total*wc).toLocaleString()+" 紅利")+
+ card("已記錄階級",Object.keys(idStats.tiers).length+" 種");
+ identifyDist.innerHTML=(tierTxt?`<div class="stat"><span class="label">階級分布</span><div style="margin-top:8px">${tierTxt}</div></div>`:"")+
+ (top.length?`<div class="stat" style="margin-top:8px"><span class="label">詞條數值最高 TOP 20</span><div style="margin-top:8px;line-height:1.9">${top.map(x=>`${x[0]}：${x[1]} 次`).join("　")}</div></div>`:"");
+ let five=(idStats.fiveResults||[]).slice().sort((a,b)=>b.value-a.value).slice(0,10);
+ wandFiveOnly.innerHTML=five.length?`<div class="stat"><span class="label">🏆 第5詞 TOP 10</span><div style="margin-top:10px">${five.map((x,i)=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>#${i+1}｜${x.lines[4]}</b></div>`).join("")}</div></div>`:"";
+}
+function resetIdentify(){idStats={total:0,tiers:{},lines:{},fiveResults:[]};identifyNow.innerHTML="";identifyStats.innerHTML="";identifyDist.innerHTML="";wandFiveOnly.innerHTML=""}
+
+
+function rollWandBatch(n){
+ const before=idStats.fiveResults.length;
+ for(let i=0;i<n;i++) rollAccessoryIdentify("wand",false);
+ const added=idStats.fiveResults.slice(before);
+ const best=added.slice().sort((a,b)=>b.value-a.value)[0];
+ identifyNow.innerHTML=`<div class="stat"><span class="label">本次 ${n.toLocaleString()} 次</span><div class="tiny" style="line-height:1.8;margin-top:5px">5詞出現 ${added.length} 次${best?`｜本批最高 <b class="ok">${best.lines[4]}</b>`:"｜未出5詞"}</div></div>`;
+ renderIdentify();
+}
+let bookStatsData={total:0,tiers:{},lines:{}};
+function bookTrial(show=true){
+ let t=weightedTier(),line=makeLine(t);
+ bookStatsData.total++;
+ bookStatsData.tiers[t.label]=(bookStatsData.tiers[t.label]||0)+1;
+ let key=`${line.name} +${line.value}%`;
+ bookStatsData.lines[key]=(bookStatsData.lines[key]||0)+1;
+ if(line.isMax) starroSaiGaoBroadcast("飾品指定魔法書",`${line.name} +${line.value}%`,bookStatsData.total,bookCost.value);
+ if(show) bookNow.innerHTML=`<div class="stat"><span class="label">本次結果</span><b class="ok">${starroTierDisplayLabel(t.label)}｜${line.name} +${line.value}%${starroMaxTag(line.isMax)}</b></div>`;
+}
+function rollBookOnce(){bookTrial(true);renderBook()}
+function rollBookBatch(n){
+ for(let i=0;i<n;i++)bookTrial(false);
+ bookNow.innerHTML=`<div class="stat"><span class="label">批次完成</span><b>指定魔法書已連抽 ${n} 次</b></div>`;
+ renderBook();
+}
+function renderBook(){
+ let total=bookStatsData.total||1;
+ let tierEntries=Object.entries(bookStatsData.tiers);
+ let bc=Math.max(0,+bookCost.value||0);
+ bookStats.innerHTML=card("累計抽取",bookStatsData.total.toLocaleString())+
+   card("每次花費",bc.toLocaleString()+" 紅利")+
+   card("累計花費",(bookStatsData.total*bc).toLocaleString()+" 紅利")+
+   card("固定詞數","5 詞")+
+   card("已出現階級",tierEntries.length+" 種");
+ let tierTxt=tierEntries.map(([k,v])=>`${k}：${v} 次（${(v/total*100).toFixed(2)}%）`).join("　");
+ let top=Object.entries(bookStatsData.lines).sort((a,b)=>{
+   const av=+(a[0].match(/\+(\d+)%/)||[0,0])[1];
+   const bv=+(b[0].match(/\+(\d+)%/)||[0,0])[1];
+   return bv-av || b[1]-a[1];
+ }).slice(0,20);
+ bookDist.innerHTML=(tierTxt?`<div class="stat"><span class="label">第5詞階級分布</span><div style="margin-top:8px;line-height:1.9">${tierTxt}</div></div>`:"")+
+ (top.length?`<div class="stat" style="margin-top:8px"><span class="label">詞條數值最高 TOP 20</span><div style="margin-top:8px;line-height:1.9">${top.map(x=>`${x[0]}：${x[1]} 次`).join("　")}</div></div>`:"");
+}
+function resetBook(){bookStatsData={total:0,tiers:{},lines:{}};bookNow.innerHTML="";bookStats.innerHTML="";bookDist.innerHTML=""}
+
+const shoeTierData=[
+ {p:89.77,label:"一般 89.77%",pow:[5,15],spl:[5,15],con:[5,15],patk:[1,10],smatk:[1,10],crate:[1,10]},
+ {p:8.98,label:"高級 8.98%",pow:[15,25],spl:[15,25],con:[15,25],patk:[10,15],smatk:[10,15],crate:[10,15]},
+ {p:0.9,label:"稀有 0.9%",pow:[25,35],spl:[25,35],con:[25,35],patk:[15,20],smatk:[15,20],crate:[15,20]},
+ {p:0.36,label:"頂級 0.36%",pow:[35,50],spl:[35,50],con:[35,50],patk:[20,30],smatk:[20,30],crate:[20,30]}
+];
+function shoeTier(){
+ let total=shoeTierData.reduce((a,x)=>a+x.p,0),r=Math.random()*total;
+ for(const t of shoeTierData){r-=t.p;if(r<0)return t}
+ return shoeTierData[0];
+}
+function shoeFifth(){
+ let t=shoeTier();
+ // 六種第五詞皆可出現；目前同階內六種詞條採等機率
+ const pool=[
+   {name:"POW",key:"pow",pct:false},
+   {name:"SPL",key:"spl",pct:false},
+   {name:"CON",key:"con",pct:false},
+   {name:"P.ATK",key:"patk",pct:true},
+   {name:"S.MATK",key:"smatk",pct:true},
+   {name:"C.RATE",key:"crate",pct:true}
+ ];
+ let item=pool[Math.floor(Math.random()*pool.length)];
+ let rg=t[item.key],v=randint(rg[0],rg[1]);
+ return {tier:t.label,name:item.name,value:v,pct:item.pct,isMax:v===(item.pct?30:50),text:`${item.name} +${v}${item.pct?"%":""}`};
+}function shoeLine1(){return `${pick(["ATK","MATK"])} +${randint(10,150)}`}
+function shoeLine2(){
+ let k=pick(["技能後延遲","變動施法時間","ASPD","固定詠唱"]);
+ if(k==="ASPD")return "ASPD +1";
+ if(k==="固定詠唱")return `固定詠唱 -${randint(10,200)} 毫秒`;
+ return `${k} -${randint(1,20)}%`;
+}
+function shoeLine3(){
+ let k=pick(["ATK","MATK","DEF","MDEF","完全迴避","CRI"]);
+ let rg=(k==="ATK"||k==="MATK")?[5,15]:(k==="DEF"?[10,100]:(k==="MDEF"?[5,25]:(k==="完全迴避"?[5,25]:[10,50])));
+ return `${k} +${randint(rg[0],rg[1])}`;
+}
+function shoeLine4(){
+ let k=pick(["P.ATK","S.MATK","C.RATE"]);
+ return `${k} +${randint(1,10)}`;
+}
+let sw={total:0,five:[]};
+function shoeWandTrial(show=true){
+ sw.total++; let r=Math.random(),n=1;
+ if(r<.75)n=2;if(r<.50)n=3;if(r<.25)n=4;if(r<.10)n=5;
+ if(n===5){
+   let f=shoeFifth(),lines=[shoeLine1(),shoeLine2(),shoeLine3(),shoeLine4(),`${f.text}｜${starroTierDisplayLabel(f.tier)}${starroMaxTag(f.isMax)}`];
+   sw.five.push({lines,value:f.value,isMax:f.isMax});
+   if(f.isMax) starroSaiGaoBroadcast("鞋子鑑定棒",f.text,sw.total,shoeWandCost.value);
+   if(show)shoeWandNow.innerHTML=`<div class="stat"><b class="ok">⭐ 取得5詞｜${lines[4]}</b></div>`;
+ } else if(show) shoeWandNow.innerHTML=`<div class="stat"><b>取得 ${n} 詞</b></div>`;
+ renderShoeWand();
+}
+function shoeWandOnce(){shoeWandTrial(true)}
+function shoeWandBatch(n){
+ const before=sw.five.length;
+ for(let i=0;i<n;i++)shoeWandTrial(false);
+ const added=sw.five.slice(before);
+ const best=added.slice().sort((a,b)=>b.value-a.value)[0];
+ shoeWandNow.innerHTML=`<div class="stat"><span class="label">本次 ${n.toLocaleString()} 次</span><div class="tiny" style="line-height:1.8;margin-top:5px">5詞出現 ${added.length} 次${best?`｜本批最高 <b class="ok">${best.lines[4]}</b>`:"｜未出5詞"}</div></div>`;
+ renderShoeWand();
+}
+function renderShoeWand(){
+ let c=Math.max(0,+shoeWandCost.value||0);
+ shoeWandStats.innerHTML=card("累計鑑定",sw.total.toLocaleString())+card("5詞次數",sw.five.length.toLocaleString(),"ok")+card("累計花費",(sw.total*c).toLocaleString()+" 紅利");
+ let a=sw.five.slice().sort((x,y)=>y.value-x.value).slice(0,10);
+ shoeWandFive.innerHTML=a.length?`<div class="stat"><span class="label">🏆 第5詞 TOP 10</span><div style="margin-top:8px">${a.map((x,i)=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><b>#${i+1}｜${x.lines[4]}</b></div>`).join("")}</div></div>`:"";
+}
+function resetShoeWand(){sw={total:0,five:[]};shoeWandNow.innerHTML="";shoeWandStats.innerHTML="";shoeWandFive.innerHTML=""}
+
+let sb={total:0,tiers:{},results:[],types:{}};
+function shoeBookTrial(show=true){
+ let f=shoeFifth();sb.total++;sb.tiers[f.tier]=(sb.tiers[f.tier]||0)+1;sb.types[f.name]=(sb.types[f.name]||0)+1;sb.results.push(f);
+ if(f.isMax) starroSaiGaoBroadcast("鞋子指定魔法書",f.text,sb.total,shoeBookCost.value);
+ let shown=(f.name==="P.ATK"||f.name==="S.MATK"||f.name==="C.RATE")?`${f.name} +${f.value}%`:`${f.name} +${f.value}`;
+ if(show)shoeBookNow.innerHTML=`<div class="stat"><b class="ok">${starroTierDisplayLabel(f.tier)}｜${shown}${starroMaxTag(f.isMax)}</b></div>`;
+}
+function shoeBookOnce(){shoeBookTrial(true);renderShoeBook()}
+function shoeBookBatch(n){for(let i=0;i<n;i++)shoeBookTrial(false);shoeBookNow.innerHTML=`<div class="stat"><b>已連抽 ${n} 次</b></div>`;renderShoeBook()}
+function renderShoeBook(){
+ let c=Math.max(0,+shoeBookCost.value||0),t=sb.total||1;
+ shoeBookStats.innerHTML=card("累計指定",sb.total.toLocaleString())+card("固定詞數","5 詞")+card("累計花費",(sb.total*c).toLocaleString()+" 紅利");
+ let tiers=Object.entries(sb.tiers).map(([k,v])=>`${k}：${v}次（${(v/t*100).toFixed(2)}%）`).join("　");
+ let types=["POW","SPL","CON","P.ATK","S.MATK","C.RATE"].map(k=>`${k}：${sb.types[k]||0}次`).join("　");
+ function shoeBookRankScore(x){
+   // 排名換算：POW/SPL/CON 35 = P.ATK/S.MATK/C.RATE 20%
+   return (x.name==="P.ATK"||x.name==="S.MATK"||x.name==="C.RATE") ? x.value*(35/20) : x.value;
+ }
+ let top=sb.results.slice().sort((a,b)=>shoeBookRankScore(b)-shoeBookRankScore(a)).slice(0,20);
+ shoeBookDist.innerHTML=(tiers?`<div class="stat"><span class="label">階級分布</span><div>${tiers}</div></div>`:"")+`<div class="stat" style="margin-top:8px"><span class="label">第五詞種類分布</span><div style="line-height:1.9">${types}</div></div>`+
+ (top.length?`<div class="stat" style="margin-top:8px"><span class="label">詞條數值最高 TOP 20</span><div style="line-height:1.9">${top.map(x=>`${x.name} +${x.value}${(x.name==="P.ATK"||x.name==="S.MATK"||x.name==="C.RATE")?"%":""}｜${starroTierDisplayLabel(x.tier)}${starroMaxTag(x.isMax)}`).join("<br>")}</div></div>`:"");
+}
+function resetShoeBook(){sb={total:0,tiers:{},results:[],types:{}};shoeBookNow.innerHTML="";shoeBookStats.innerHTML="";shoeBookDist.innerHTML=""}
+
+
+const midTierData=[
+ {p:89.77,label:"一般 89.77%",race:[5,10],head:[5,10]},
+ {p:8.98,label:"高級 8.98%",race:[10,15],head:[10,15]},
+ {p:0.9,label:"稀有 0.9%",race:[15,25],head:[15,25]},
+ {p:0.36,label:"頂級 0.36%",race:[25,35],head:[25,35]}
+];
+function midTier(){
+ let total=midTierData.reduce((a,x)=>a+x.p,0),r=Math.random()*total;
+ for(const t of midTierData){r-=t.p;if(r<0)return t}
+ return midTierData[0];
+}
+
+function midWandFifth(){
+  const kinds=[
+    ["對種族魔物的物理攻擊增加",5,35],
+    ["對種族魔物的魔法攻擊增加",5,35],
+    ["對屬性魔物的物理攻擊增加",5,35],
+    ["對屬性魔物的魔法攻擊增加",5,35],
+    ["對首領類魔物的物理攻擊增加",5,35],
+    ["對首領類魔物的魔法攻擊增加",5,35]
+  ];
+  const x=pick(kinds);
+  const v=randint(x[1],x[2]);
+  return {
+    name:x[0],
+    value:v,
+    isMax:v===35,
+    text:`${x[0]} ${v}%${starroMaxTag(v===35)}`
+  };
+}
+
+function midFifth(){
+ let t=midTier();
+ let kinds=[
+   ["對種族魔物的物理攻擊增加","race"],
+   ["對種族魔物的魔法攻擊增加","race"],
+   ["對屬性魔物的物理攻擊增加","race"],
+   ["對屬性魔物的魔法攻擊增加","race"],
+   ["對首領類魔物的物理攻擊增加","head"],
+   ["對首領類魔物的魔法攻擊增加","head"]
+ ];
+ let x=pick(kinds),rg=t[x[1]],v=randint(rg[0],rg[1]);
+ return {tier:t.label,name:x[0],value:v,isMax:v===35,text:`${x[0]} ${v}%`};
+}
+function midLine1(){return `${pick(["ATK","MATK"])} +${randint(10,150)}`}
+function midLine2(){
+ let k=pick(["技能後延遲","變動施法時間","ASPD","固定詠唱"]);
+ if(k==="ASPD")return "ASPD +1";
+ if(k==="固定詠唱")return `固定詠唱 -${randint(10,200)} 毫秒`;
+ return `${k} -${randint(1,20)}%`;
+}
+function midLine3(){return `${pick(["POW","SPL","STA","WIS","CON","CRT"])} +${randint(1,5)}`}
+function midLine4(){return `${pick(["P.ATK","S.MATK","C.RATE"])} +${randint(1,10)}`}
+
+let mw={total:0,five:[]};
+function midWandTrial(show=true){
+ mw.total++;let r=Math.random(),n=1;
+ if(r<.75)n=2;if(r<.50)n=3;if(r<.25)n=4;if(r<.10)n=5;
+ if(n===5){
+   let f=midWandFifth(),lines=[midLine1(),midLine2(),midLine3(),midLine4(),f.text];
+   mw.five.push({lines,value:f.value,isMax:f.isMax});
+   if(f.isMax) starroSaiGaoBroadcast("頭中鑑定棒",f.text,mw.total,midWandCost.value);
+   if(show)midWandNow.innerHTML=`<div class="stat"><b class="ok">⭐ 取得5詞</b><div class="tiny" style="line-height:1.9;margin-top:8px">${lines.map((z,j)=>`${j+1}. ${z}`).join("<br>")}</div></div>`;
+ }else if(show)midWandNow.innerHTML=`<div class="stat"><b>取得 ${n} 詞</b></div>`;
+ renderMidWand();
+}
+function midWandOnce(){midWandTrial(true)}
+function midWandBatch(n){
+ const before=mw.five.length;
+ for(let i=0;i<n;i++)midWandTrial(false);
+ const added=mw.five.slice(before);
+ const best=added.slice().sort((a,b)=>b.value-a.value)[0];
+ midWandNow.innerHTML=`<div class="stat"><span class="label">本次 ${n.toLocaleString()} 次</span><div class="tiny" style="line-height:1.8;margin-top:5px">5詞出現 ${added.length} 次${best?`<br><b class="ok">本批最高</b><br>${best.lines.map((z,j)=>`${j+1}. ${z}`).join("<br>")}`:"｜未出5詞"}</div></div>`;
+ renderMidWand();
+}
+function renderMidWand(){
+ let c=Math.max(0,+midWandCost.value||0);
+ midWandStats.innerHTML=card("累計鑑定",mw.total.toLocaleString())+card("5詞次數",mw.five.length.toLocaleString(),"ok")+card("累計花費",(mw.total*c).toLocaleString()+" 紅利");
+ let a=mw.five.slice().sort((x,y)=>y.value-x.value).slice(0,10);
+ midWandFive.innerHTML=a.length?`<div class="stat"><span class="label">⭐ 只顯示5詞完整結果 TOP 10</span><div style="margin-top:8px">${a.map((x,i)=>`<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>#${i+1}</b><br>${x.lines.map((z,j)=>`${j+1}. ${z}`).join("<br>")}</div>`).join("")}</div></div>`:"";
+}
+function resetMidWand(){mw={total:0,five:[]};midWandNow.innerHTML="";midWandStats.innerHTML="";midWandFive.innerHTML=""}
+
+let mb={total:0,tiers:{},results:[]};
+function midBookTrial(show=true){
+ let f=midFifth();mb.total++;mb.tiers[f.tier]=(mb.tiers[f.tier]||0)+1;mb.results.push(f);
+ if(f.isMax) starroSaiGaoBroadcast("頭中指定魔法書",f.text,mb.total,midBookCost.value);
+ if(show)midBookNow.innerHTML=`<div class="stat"><b class="ok">${starroTierDisplayLabel(f.tier)}｜${f.text}${starroMaxTag(f.isMax)}</b></div>`;
+}
+function midBookOnce(){midBookTrial(true);renderMidBook()}
+function midBookBatch(n){for(let i=0;i<n;i++)midBookTrial(false);midBookNow.innerHTML=`<div class="stat"><b>已連抽 ${n} 次</b></div>`;renderMidBook()}
+function renderMidBook(){
+ let c=Math.max(0,+midBookCost.value||0),t=mb.total||1;
+ midBookStats.innerHTML=card("累計指定",mb.total.toLocaleString())+card("固定詞數","5 詞")+card("累計花費",(mb.total*c).toLocaleString()+" 紅利");
+ let tiers=Object.entries(mb.tiers).map(([k,v])=>`${k}：${v}次（${(v/t*100).toFixed(2)}%）`).join("　");
+ let top=mb.results.slice().sort((a,b)=>b.value-a.value).slice(0,20);
+ midBookDist.innerHTML=(tiers?`<div class="stat"><span class="label">階級分布</span><div>${tiers}</div></div>`:"")+
+ (top.length?`<div class="stat" style="margin-top:8px"><span class="label">詞條數值最高 TOP 20</span><div style="line-height:1.9">${top.map(x=>`${x.text}｜${starroTierDisplayLabel(x.tier)}${starroMaxTag(x.isMax)}`).join("<br>")}</div></div>`:"");
+}
+function resetMidBook(){mb={total:0,tiers:{},results:[]};midBookNow.innerHTML="";midBookStats.innerHTML="";midBookDist.innerHTML=""}
+
+
+const lowTierData=[
+ {p:89.77,label:"一般 89.77%",range:[5,10]},
+ {p:8.98,label:"高級 8.98%",range:[10,15]},
+ {p:0.9,label:"稀有 0.9%",range:[15,25]},
+ {p:0.36,label:"頂級 0.36%",range:[25,35]}
+];
+function lowTier(){
+ let total=lowTierData.reduce((a,x)=>a+x.p,0),r=Math.random()*total;
+ for(const t of lowTierData){r-=t.p;if(r<0)return t}
+ return lowTierData[0];
+}
+
+function lowWandFifth(){
+  const kinds=[
+    "對種族魔物的物理攻擊增加",
+    "對種族魔物的魔法攻擊增加",
+    "對屬性魔物的物理攻擊增加",
+    "對屬性魔物的魔法攻擊增加",
+    "對全體型魔物的物理攻擊增加",
+    "對全體型魔物的魔法攻擊增加"
+  ];
+  const name=pick(kinds);
+  const v=randint(5,35);
+  return {
+    name,
+    value:v,
+    isMax:v===35,
+    text:`${name} ${v}%${starroMaxTag(v===35)}`
+  };
+}
+
+function lowFifth(){
+ let t=lowTier();
+ let kinds=[
+  "對種族魔物的物理攻擊增加","對種族魔物的魔法攻擊增加",
+  "對屬性魔物的物理攻擊增加","對屬性魔物的魔法攻擊增加",
+  "對全體型魔物的物理攻擊增加","對全體型魔物的魔法攻擊增加"
+ ];
+ let name=pick(kinds),v=randint(t.range[0],t.range[1]);
+ return {tier:t.label,name,value:v,isMax:v===35,text:`${name} ${v}%`};
+}
+function lowLine1(){return `${pick(["ATK","MATK"])} +${randint(10,150)}`}
+function lowLine2(){
+ let k=pick(["技能後延遲","變動施法時間","ASPD","固定詠唱"]);
+ if(k==="ASPD")return "ASPD +1";
+ if(k==="固定詠唱")return `固定詠唱 -${randint(10,200)} 毫秒`;
+ return `${k} -${randint(1,20)}%`;
+}
+function lowLine3(){
+ let k=pick(["ATK","MATK","DEF","MDEF","完全迴避","CRI"]);
+ let rg=(k==="ATK"||k==="MATK")?[5,15]:(k==="DEF"?[10,100]:(k==="MDEF"?[5,25]:(k==="完全迴避"?[5,25]:[10,50])));
+ return `${k} +${randint(rg[0],rg[1])}`;
+}
+function lowLine4(){return `${pick(["P.ATK","S.MATK","C.RATE"])} +${randint(1,10)}`}
+
+let lw={total:0,five:[]};
+function lowWandTrial(show=true){
+ lw.total++;let r=Math.random(),n=1;
+ if(r<.75)n=2;if(r<.50)n=3;if(r<.25)n=4;if(r<.10)n=5;
+ if(n===5){
+  let f=lowWandFifth(),lines=[lowLine1(),lowLine2(),lowLine3(),lowLine4(),f.text];
+  lw.five.push({lines,value:f.value,isMax:f.isMax});
+  if(f.isMax) starroSaiGaoBroadcast("頭下鑑定棒",f.text,lw.total,lowWandCost.value);
+  if(show)lowWandNow.innerHTML=`<div class="stat"><b class="ok">⭐ 取得5詞</b><div class="tiny" style="line-height:1.9;margin-top:8px">${lines.map((z,j)=>`${j+1}. ${z}`).join("<br>")}</div></div>`;
+ }else if(show)lowWandNow.innerHTML=`<div class="stat"><b>取得 ${n} 詞</b></div>`;
+ renderLowWand();
+}
+function lowWandOnce(){lowWandTrial(true)}
+function lowWandBatch(n){
+ const before=lw.five.length;
+ for(let i=0;i<n;i++)lowWandTrial(false);
+ const added=lw.five.slice(before);
+ const best=added.slice().sort((a,b)=>b.value-a.value)[0];
+ lowWandNow.innerHTML=`<div class="stat"><span class="label">本次 ${n.toLocaleString()} 次</span><div class="tiny" style="line-height:1.8;margin-top:5px">5詞出現 ${added.length} 次${best?`<br><b class="ok">本批最高</b><br>${best.lines.map((z,j)=>`${j+1}. ${z}`).join("<br>")}`:"｜未出5詞"}</div></div>`;
+ renderLowWand();
+}
+function renderLowWand(){
+ let c=Math.max(0,+lowWandCost.value||0);
+ lowWandStats.innerHTML=card("累計鑑定",lw.total.toLocaleString())+card("5詞次數",lw.five.length.toLocaleString(),"ok")+card("累計花費",(lw.total*c).toLocaleString()+" 紅利");
+ let a=lw.five.slice().sort((x,y)=>y.value-x.value).slice(0,10);
+ lowWandFive.innerHTML=a.length?`<div class="stat"><span class="label">⭐ 只顯示5詞完整結果 TOP 10</span><div style="margin-top:8px">${a.map((x,i)=>`<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>#${i+1}</b><br>${x.lines.map((z,j)=>`${j+1}. ${z}`).join("<br>")}</div>`).join("")}</div></div>`:"";
+}
+function resetLowWand(){lw={total:0,five:[]};lowWandNow.innerHTML="";lowWandStats.innerHTML="";lowWandFive.innerHTML=""}
+
+let lb={total:0,tiers:{},results:[]};
+function lowBookTrial(show=true){
+ let f=lowFifth();lb.total++;lb.tiers[f.tier]=(lb.tiers[f.tier]||0)+1;lb.results.push(f);
+ if(f.isMax) starroSaiGaoBroadcast("頭下指定魔法書",f.text,lb.total,lowBookCost.value);
+ if(show)lowBookNow.innerHTML=`<div class="stat"><b class="ok">${starroTierDisplayLabel(f.tier)}｜${f.text}${starroMaxTag(f.isMax)}</b></div>`;
+}
+function lowBookOnce(){lowBookTrial(true);renderLowBook()}
+function lowBookBatch(n){for(let i=0;i<n;i++)lowBookTrial(false);lowBookNow.innerHTML=`<div class="stat"><b>已連抽 ${n} 次</b></div>`;renderLowBook()}
+function renderLowBook(){
+ let c=Math.max(0,+lowBookCost.value||0),t=lb.total||1;
+ lowBookStats.innerHTML=card("累計指定",lb.total.toLocaleString())+card("固定詞數","5 詞")+card("累計花費",(lb.total*c).toLocaleString()+" 紅利");
+ let tiers=Object.entries(lb.tiers).map(([k,v])=>`${k}：${v}次（${(v/t*100).toFixed(2)}%）`).join("　");
+ let top=lb.results.slice().sort((a,b)=>b.value-a.value).slice(0,20);
+ lowBookDist.innerHTML=(tiers?`<div class="stat"><span class="label">階級分布</span><div>${tiers}</div></div>`:"")+
+ (top.length?`<div class="stat" style="margin-top:8px"><span class="label">詞條數值最高 TOP 20</span><div style="line-height:1.9">${top.map(x=>`${x.text}｜${starroTierDisplayLabel(x.tier)}${starroMaxTag(x.isMax)}`).join("<br>")}</div></div>`:"");
+}
+function resetLowBook(){lb={total:0,tiers:{},results:[]};lowBookNow.innerHTML="";lowBookStats.innerHTML="";lowBookDist.innerHTML=""}
+
+
+
+/* ===== 精煉箱 ===== */
+const REFINE_BOX_COST=750;
+const refineBoxItems=[
+  {name:"神工匠的鐵鎚",tag:"小灰",p:16.67,cls:"",value:1},
+  {name:"極限神工匠的鐵鎚",tag:"大灰",p:16.67,cls:"",value:110},
+  {name:"乙太神工匠的鐵鎚",tag:"-1灰槌",p:16.67,cls:"",value:9},
+  {name:"高密度乙太神工匠的鐵鎚",tag:"小金",p:13.33,cls:"",value:90},
+  {name:"極限乙太神工匠的鐵鎚",tag:"-1金槌",p:13.33,cls:"",value:80},
+  {name:"高密度極限乙太神工匠的鐵鎚",tag:"大金",p:10.00,cls:"refine-gold",value:800},
+  {name:"傳說乙太神工匠的鐵鎚",tag:"傳說-1綠",p:10.00,cls:"refine-green",value:1000},
+  {name:"高密度傳說乙太神工匠的鐵鎚",tag:"傳說大金",p:3.33,cls:"refine-legendary-gold",value:20000}
+];
+
+let refineBoxState={
+  total:0,
+  totalValue:0,
+  counts:Object.fromEntries(refineBoxItems.map(x=>[x.name,0]))
+};
+
+function refineBoxPick(){
+  const total=refineBoxItems.reduce((s,x)=>s+x.p,0);
+  let r=Math.random()*total;
+  for(const x of refineBoxItems){
+    r-=x.p;
+    if(r<0)return x;
+  }
+  return refineBoxItems[refineBoxItems.length-1];
+}
+
+function refineBoxOpen(n){
+  const batch=Object.fromEntries(refineBoxItems.map(x=>[x.name,0]));
+  for(let i=0;i<n;i++){
+    const item=refineBoxPick();
+    refineBoxState.total++;
+    refineBoxState.totalValue+=item.value;
+    refineBoxState.counts[item.name]++;
+    batch[item.name]++;
+  }
+
+  const rows=refineBoxItems
+    .filter(x=>batch[x.name]>0)
+    .map(x=>x.cls?`<span class="${x.cls}">(${x.tag}) ${x.name}</span> × ${batch[x.name].toLocaleString()}`:`(${x.tag}) ${x.name} × ${batch[x.name].toLocaleString()}`)
+    .join("<br>");
+
+  document.getElementById("refineBoxNow").innerHTML=
+    `<div class="stat"><span class="label">本次開啟 ${n.toLocaleString()} 箱</span>`+
+    `<div class="tiny" style="line-height:1.9;margin-top:6px">花費 ${(n*REFINE_BOX_COST).toLocaleString()} P<br>${rows}</div></div>`;
+
+  refineBoxRender();
+}
+
+function refineBoxRender(){
+  const s=refineBoxState;
+  document.getElementById("refineBoxStats").innerHTML=
+    card("每抽費用",REFINE_BOX_COST.toLocaleString()+" P")+
+    card("累計開箱",s.total.toLocaleString())+
+    card("累計花費",(s.total*REFINE_BOX_COST).toLocaleString()+" P");
+
+  document.getElementById("refineBoxDist").innerHTML=
+    `<div class="stat"><span class="label">累計獲得</span>`+
+    `<div class="tiny" style="line-height:1.9;margin-top:6px">`+
+    refineBoxItems.map(x=>{
+      const count=s.counts[x.name]||0;
+      const rate=s.total?(count/s.total*100).toFixed(2):"0.00";
+      return x.cls?`<span class="${x.cls}">(${x.tag}) ${x.name}</span>：${count.toLocaleString()} 次（${rate}%）`:`(${x.tag}) ${x.name}：${count.toLocaleString()} 次（${rate}%）`;
+    }).join("<br>")+
+    `</div></div>`;
+}
+
+function refineBoxReset(){
+  refineBoxState={
+    total:0,
+    totalValue:0,
+    counts:Object.fromEntries(refineBoxItems.map(x=>[x.name,0]))
+  };
+  document.getElementById("refineBoxNow").innerHTML="";
+  document.getElementById("refineBoxStats").innerHTML="";
+  document.getElementById("refineBoxDist").innerHTML="";
+}
+
+
+let xrG={
+ draws:0,xr:0,ur:0,
+ pity:0,
+ guarantee:0,guaranteeXR:0,guaranteeUR1:0,guaranteeUR2:0,
+ hitLog:[]
+};
+function xrOne(){
+ xrG.draws++;
+ xrG.pity++;
+ let r=Math.random()*100, prize="一般";
+ if(r<0.07){xrG.xr++;prize="XR大獎"}
+ else if(r<0.105){xrG.ur++;prize="UR一獎"}
+ else if(r<0.14){xrG.ur++;prize="UR二獎"}
+
+ if(prize!=="一般"){
+   xrG.hitLog.push({draw:xrG.pity,prize:prize,type:"自然"});
+   // 只要自然抽到 XR大獎 / UR一獎 / UR二獎，保底立即重置。
+   xrG.pity=0;
+   return prize;
+ }
+
+ // 連續1001抽都沒有任何大獎時，才觸發3抽1保底；保底後重新從第1抽計算。
+ if(xrG.pity>=1001){
+   let g=pick(["XR大獎","UR一獎","UR二獎"]);
+   xrG.guarantee++;
+   if(g==="XR大獎") xrG.guaranteeXR++;
+   else if(g==="UR一獎") xrG.guaranteeUR1++;
+   else xrG.guaranteeUR2++;
+   xrG.hitLog.push({draw:1001,prize:g,type:"保底"});
+   xrG.pity=0;
+ }
+ return prize;
+}
+function xrDraw(n){
+ let before=xrG.hitLog.length;
+ for(let i=0;i<n;i++) xrOne();
+ let fresh=xrG.hitLog.slice(before);
+ fresh.filter(x=>x.prize==="XR大獎" && x.type!=="保底" && x.draw<=500)
+      .forEach(x=>starroAnnounce("XR轉蛋","XR大獎",`1000抽內中獎｜第 ${x.draw} 抽`));
+ let rows=fresh.length
+   ? fresh.map(x=>`${x.type==="保底"?"🎁":"🎉"} 第 ${x.draw} 抽｜${x.prize}${x.type==="保底"?"（1001抽保底）":""}`).join("<br>")
+   : "本次未出 XR / UR";
+ xrNow.innerHTML=`<div class="stat"><span class="label">本次 ${n.toLocaleString()} 抽｜目前保底進度 ${xrG.pity}/1001</span><div style="margin-top:8px;line-height:1.9"><b>${rows}</b></div></div>`;
+ renderXR();
+}
+function renderXR(){
+ let t=xrG.draws||1;
+ xrStats.innerHTML=
+ card("累計抽數",xrG.draws.toLocaleString())+
+ card("每抽花費","19 紅利")+
+ card("累計花費",(xrG.draws*19).toLocaleString()+" 紅利")+
+ card("目前保底進度",`${xrG.pity} / 1001`)+
+ card("距離下次保底",(1001-xrG.pity).toLocaleString()+" 抽")+
+ card("XR",xrG.xr.toLocaleString(),"ok")+
+ card("UR",xrG.ur.toLocaleString(),"ok")+
+ card("1001抽保底",xrG.guarantee.toLocaleString())+
+ card("保底 XR大獎",xrG.guaranteeXR.toLocaleString())+
+ card("保底 UR一獎",xrG.guaranteeUR1.toLocaleString())+
+ card("保底 UR二獎",xrG.guaranteeUR2.toLocaleString());
+
+ let recent=xrG.hitLog.slice(-30).reverse();
+ xrDist.innerHTML=`<div class="stat"><span class="label">出獎紀錄（最近 30 筆）</span><div style="margin-top:8px;line-height:1.9">${recent.length?recent.map(x=>`${x.type==="保底"?"🎁":"🎉"} 第 ${x.draw} 抽｜${x.prize}${x.type==="保底"?"（保底）":""}`).join("<br>"):"尚未出獎"}</div></div>
+ <div class="stat" style="margin-top:8px"><span class="label">實際出現率</span><div style="line-height:1.9">XR：${(xrG.xr/t*100).toFixed(4)}%（理論 0.07%）<br>UR：${(xrG.ur/t*100).toFixed(4)}%（理論 0.07%）</div></div>`;
+}
+function resetXR(){
+ xrG={draws:0,xr:0,ur:0,pity:0,guarantee:0,guaranteeXR:0,guaranteeUR1:0,guaranteeUR2:0,hitLog:[]};
+ xrNow.innerHTML="";xrStats.innerHTML="";xrDist.innerHTML="";
+}
+
+let urG={draws:0,book:0,huajin:0};
+function urOne(){
+ urG.draws++;
+ let r=Math.random()*100;
+ // 總UR 0.15%，其中華金自選箱 0.05%，剩餘0.10%視為UR服飾隨機書
+ if(r<0.05){urG.huajin++;return "華金自選箱"}
+ if(r<0.15){urG.book++;return "UR服飾隨機書"}
+ return "一般";
+}
+function urDraw(n){
+ let b=0,h=0;
+ for(let i=0;i<n;i++){
+   let x=urOne();
+   if(x==="華金自選箱")h++;
+   else if(x==="UR服飾隨機書")b++;
+ }
+ if(n===500 && h>0) starroAnnounce("UR轉蛋","華金自選箱",`500抽中獎｜華金自選箱 × ${h.toLocaleString()}`);
+ urNow.innerHTML=`<div class="stat"><span class="label">本次 ${n.toLocaleString()} 抽</span><b>${b?`UR服飾隨機書 × ${b}　`:""}${h?`華金自選箱 × ${h}`:""}${!b&&!h?"未出 UR":""}</b></div>`;
+ renderUR();
+}
+function renderUR(){
+ let t=urG.draws||1,total=urG.book+urG.huajin;
+ urStats.innerHTML=card("累計抽數",urG.draws.toLocaleString())+
+ card("每抽花費","19 紅利")+
+ card("累計花費",(urG.draws*19).toLocaleString()+" 紅利")+
+ card("UR總數",total.toLocaleString(),"ok")+
+ card("UR服飾隨機書",urG.book.toLocaleString())+
+ card("華金自選箱",urG.huajin.toLocaleString(),"ok");
+ urDist.innerHTML=`<div class="stat"><span class="label">實際出現率</span><div style="line-height:1.9">UR總計：${(total/t*100).toFixed(4)}%（理論 0.15%）<br>UR服飾隨機書：${(urG.book/t*100).toFixed(4)}%（推定 0.10%）<br>華金自選箱：${(urG.huajin/t*100).toFixed(4)}%（理論 0.05%）</div></div>`;
+}
+function resetUR(){urG={draws:0,book:0,huajin:0};urNow.innerHTML="";urStats.innerHTML="";urDist.innerHTML=""}
+
+
+/* ===== 進階武器鑑定 / 武器指定晶片 ===== */
+let advWeaponState={draws:0,fourth:0,top:[]};
+const ADV_WEAPON_COST=19;
+
+function advWeaponRand(min,max){
+  return Math.floor(Math.random()*(max-min+1))+min;
+}
+function advWeaponPick(arr){
+  return arr[Math.floor(Math.random()*arr.length)];
+}
+function advWeaponFirst(){
+  const pool=[
+    ()=>`SCR +${advWeaponRand(5,15)}`,
+    ()=>`ATK +${advWeaponRand(50,250)}`,
+    ()=>`MATK +${advWeaponRand(50,250)}`,
+    ()=>`CRI +${advWeaponRand(5,20)}`,
+    ()=>`ASPD +${advWeaponRand(1,3)}`,
+    ()=>`MHP +${advWeaponRand(1,20)}%`,
+    ()=>`MSP +${advWeaponRand(1,20)}%`,
+    ()=>`對所有種族攻擊的抗性 +${advWeaponRand(1,5)}%`,
+    ()=>`對所有階級攻擊的抗性 +${advWeaponRand(1,5)}%`,
+    ()=>`對所有體型攻擊的抗性 +${advWeaponRand(1,5)}%`
+  ];
+  return advWeaponPick(pool)();
+}
+function advWeaponSecond(){
+  const pool=[
+    ()=>`P.ATK +${advWeaponRand(1,15)}`,
+    ()=>`S.MATK +${advWeaponRand(1,15)}`,
+    ()=>`C.RATE +${advWeaponRand(1,10)}`,
+    ()=>`RES +${advWeaponRand(1,15)}`,
+    ()=>`MRES +${advWeaponRand(1,15)}`,
+    ()=>`H.PLUS +${advWeaponRand(1,15)}`
+  ];
+  return advWeaponPick(pool)();
+}
+function advWeaponThird(){
+  const pool=[
+    "對首領類魔物的物理攻擊增加",
+    "對首領類魔物的魔法攻擊增加",
+    "對生命體型魔物的物理攻擊增加",
+    "對生命體型魔物的魔法攻擊增加",
+    "對全體型魔物的物理攻擊增加",
+    "對全體型魔物的魔法攻擊增加",
+    "對全種族魔物的物理攻擊增加",
+    "對全種族魔物的魔法攻擊增加",
+    "必殺技傷害增加"
+  ];
+  return `${advWeaponPick(pool)} +${advWeaponRand(1,35)}%`;
+}
+
+
+
+
+function starroDisplayText(v){
+  return String(v ?? "").replaceAll("賽高🎉","最頂").replaceAll("賽高","最頂");
+}
+
+function starroMaxTag(isMax){
+  return isMax ? "｜最頂" : "";
+}
+
+function starroSaiGaoBroadcast(type,result,tries,costPerTry){
+  if(typeof window.starroBroadcast!=="function") return;
+  const totalCost=Math.max(0,Number(tries)||0)*Math.max(0,Number(costPerTry)||0);
+  window.starroBroadcast(
+    type,
+    `最頂｜${result}`,
+    `洗到 ${result}｜累計花費 ${totalCost.toLocaleString()} 紅利`
+  );
+}
+
+function starroTierNameByIndex(tier){
+  return tier===3 ? "頂級" : tier===2 ? "稀有" : tier===1 ? "高級" : "一般";
+}
+function starroTierDisplayByIndex(tier){
+  const name=starroTierNameByIndex(tier);
+  return tier===3 ? `<span class="tier-top-red">${name}</span>` : name;
+}
+function starroTierDisplayLabel(label){
+  const s=String(label ?? "");
+  return s.includes("0.36%") ? `<span class="tier-top-red">${s}</span>` : s;
+}
+
+function advFinalDamageTierRoll(maxTop){
+  // 官方四階機率：89.77% / 8.98% / 0.9% / 0.36%
+  const weights=[89.77,8.98,0.9,0.36];
+  const total=weights.reduce((a,b)=>a+b,0);
+  let r=Math.random()*total;
+  let tier=0;
+  for(let i=0;i<weights.length;i++){
+    r-=weights[i];
+    if(r<0){tier=i;break;}
+  }
+
+  // 第4詞：1~10 / 11~15 / 16~24 / 25~30
+  // 第5詞：1~10 / 11~15 / 16~19 / 20~25
+  const ranges=maxTop===30
+    ? [[1,10],[11,15],[16,24],[25,30]]
+    : [[1,10],[11,15],[16,19],[20,25]];
+
+  const [min,max]=ranges[tier];
+  return {tier,value:advWeaponRand(min,max)};
+}
+
+function advWeaponOne(){
+  advWeaponState.draws++;
+
+  const roll=Math.random();
+  let wordCount=1;
+  if(roll<0.10) wordCount=4;
+  else if(roll<0.25) wordCount=3;
+  else if(roll<0.50) wordCount=2;
+
+  const lines=[advWeaponFirst()];
+  if(wordCount>=2) lines.push(advWeaponSecond());
+  if(wordCount>=3) lines.push(advWeaponThird());
+
+  let fourth=null;
+  if(wordCount===4){
+    const rolled=advFinalDamageTierRoll(30);
+    fourth=rolled.value;
+    lines.push(`全技能最終傷害 +${fourth}%（乘算）`);
+    advWeaponState.fourth++;
+
+    advWeaponState.top.push({
+      draw:advWeaponState.draws,
+      value:fourth,
+      tier:rolled.tier,
+      isMax: fourth === 30,
+      lines:[...lines]
+    });
+
+    if(fourth === 30){
+      starroSaiGaoBroadcast("進階武器鑑定",`第4詞 全技能最終傷害 +${fourth}%`,advWeaponState.draws,ADV_WEAPON_COST);
+    }
+
+    advWeaponState.top.sort((a,b)=>b.value-a.value || a.draw-b.draw);
+    advWeaponState.top=advWeaponState.top.slice(0,10);
+  }
+
+  return fourth;
+}
+function advWeaponBatch(n){
+  let hit=0,best=0,bestTier=0;
+  for(let i=0;i<n;i++){
+    const beforeDraw=advWeaponState.draws;
+    const v=advWeaponOne();
+    if(v!==null){
+      hit++;
+      const rec=advWeaponState.top.find(x=>x.draw===beforeDraw+1);
+      const tier=rec?rec.tier:0;
+      if(v>best){best=v;bestTier=tier;}
+    }
+  }
+  const bestIsMax=hit && best===30;
+  document.getElementById("advWeaponNow").innerHTML=
+    `<div class="stat"><span class="label">本次 ${n.toLocaleString()} 次</span>`+
+    `<div class="tiny" style="line-height:1.8;margin-top:5px">`+
+    `第4詞出現 ${hit} 次${hit?`｜本批最高 <b class="ok">+${best}%｜${starroTierDisplayByIndex(bestTier)}${starroMaxTag(bestIsMax)}</b>`:"｜未出第4詞"}<br>`+
+    `本次花費 ${(n*ADV_WEAPON_COST).toLocaleString()} 紅利</div></div>`;
+  renderAdvWeapon();
+}
+function renderAdvWeapon(){
+  const s=advWeaponState;
+  const rate=s.draws?s.fourth/s.draws*100:0;
+  document.getElementById("advWeaponStats").innerHTML=
+    card("累計鑑定",s.draws.toLocaleString())+
+    card("累計花費",(s.draws*ADV_WEAPON_COST).toLocaleString()+" 紅利")+
+    card("第4詞出現",s.fourth.toLocaleString(),"ok")+
+    card("第4詞實際率",rate.toFixed(2)+"%");
+  document.getElementById("advWeaponTop").innerHTML=
+    `<div class="label">🏆 第4詞 TOP 10</div>`+
+    (s.top.length?s.top.map((x,i)=>
+      `<div class="stat" style="margin-top:7px"><span class="label">#${i+1}｜第 ${x.draw.toLocaleString()} 次｜`+
+      `<b class="ok">全技能最終傷害 +${x.value}%｜${starroTierDisplayByIndex(x.tier)}${starroMaxTag(x.isMax)}</b></span>`+
+      `<div class="tiny" style="line-height:1.75;margin-top:5px">${x.lines.join("<br>")}</div></div>`
+    ).join(""):`<div class="stat"><span class="tiny">尚未出現第4詞。</span></div>`);
+}
+function resetAdvWeapon(){
+  advWeaponState={draws:0,fourth:0,top:[]};
+  advWeaponNow.innerHTML="";advWeaponStats.innerHTML="";advWeaponTop.innerHTML="";
+}
+
+let weaponChipState={draws:0,top:[]};
+const WEAPON_CHIP_COST=49;
+function weaponChipOne(){
+  weaponChipState.draws++;
+  const rolled=advFinalDamageTierRoll(25);
+  const value=rolled.value;
+  const isMax=value===25;
+  weaponChipState.top.push({draw:weaponChipState.draws,value,tier:rolled.tier,isMax});
+  if(isMax){
+    starroSaiGaoBroadcast("武器指定晶片",`第5詞 全技能最終傷害 +${value}%`,weaponChipState.draws,WEAPON_CHIP_COST);
+  }
+  weaponChipState.top.sort((a,b)=>b.value-a.value || a.draw-b.draw);
+  weaponChipState.top=weaponChipState.top.slice(0,10);
+  return {value,tier:rolled.tier,isMax};
+}
+function weaponChipBatch(n){
+  let best=0,bestTier=0,bestIsMax=false,last=0,lastTier=0,lastIsMax=false;
+  for(let i=0;i<n;i++){
+    const rolled=weaponChipOne();
+    last=rolled.value;
+    lastTier=rolled.tier;
+    lastIsMax=rolled.isMax;
+    if(last>best){
+      best=last;
+      bestTier=lastTier;
+      bestIsMax=lastIsMax;
+    }
+  }
+  document.getElementById("weaponChipNow").innerHTML=
+    `<div class="stat"><span class="label">本次 ${n.toLocaleString()} 次</span>`+
+    `<div class="tiny" style="line-height:1.8;margin-top:5px">`+
+    `本批最高 <b class="ok">全技能最終傷害 +${best}%｜${starroTierDisplayByIndex(bestTier)}${starroMaxTag(bestIsMax)}</b>｜最後一次 +${last}%｜${starroTierDisplayByIndex(lastTier)}${starroMaxTag(lastIsMax)}<br>`+
+    `本次花費 ${(n*WEAPON_CHIP_COST).toLocaleString()} 紅利</div></div>`;
+  renderWeaponChip();
+}
+function renderWeaponChip(){
+  const s=weaponChipState;
+  document.getElementById("weaponChipStats").innerHTML=
+    card("累計指定",s.draws.toLocaleString())+
+    card("每次花費",WEAPON_CHIP_COST+" 紅利")+
+    card("累計花費",(s.draws*WEAPON_CHIP_COST).toLocaleString()+" 紅利");
+  document.getElementById("weaponChipTop").innerHTML=
+    `<div class="label">🏆 全技能最終傷害 TOP 10</div>`+
+    (s.top.length?s.top.map((x,i)=>
+      `<div class="stat" style="margin-top:7px"><span class="label">#${i+1}｜第 ${x.draw.toLocaleString()} 次｜`+
+      `<b class="ok">全技能最終傷害 +${x.value}%｜${starroTierDisplayByIndex(x.tier)}${starroMaxTag(x.isMax)}</b></span></div>`
+    ).join(""):`<div class="stat"><span class="tiny">尚無紀錄。</span></div>`);
+}
+function resetWeaponChip(){
+  weaponChipState={draws:0,top:[]};
+  weaponChipNow.innerHTML="";weaponChipStats.innerHTML="";weaponChipTop.innerHTML="";
+}
+
+
+const hole3Pool=["變異餓熊威力","變異光速瞬移","變異無感肌肉","變異暴走魔法","變異犀利鷹眼","變異幸運之日"];
+const holeTypes=["鬥志","魔力","尖銳","名弓"];
+const hole4Series=[{name:"墮落根莖",w:70},{name:"闇答萊屍",w:20},{name:"希梅爾茲",w:10}];
+let holeData={n:0,h3:{},h4:{},himei:0};
+function weightedHole4Series(){let total=100,r=Math.random()*total;for(const x of hole4Series){r-=x.w;if(r<0)return x.name}return "希梅爾茲"}
+function oneHoleRoll(show=true){let series=weightedHole4Series(),h4=series+"的"+pick(holeTypes),h3=null;holeData.n++;holeData.h4[h4]=(holeData.h4[h4]||0)+1;if(series==="希梅爾茲"){holeData.himei++;h3=pick(hole3Pool);holeData.h3[h3]=(holeData.h3[h3]||0)+1}if(show)document.getElementById("holeNow").innerHTML=`<div class="stat"><span class="label">本次結果</span><div style="font-size:20px;line-height:1.9"><b>第四洞：${h4}</b><br>${h3?`<b class="ok">第三洞：${h3}</b>`:`<span class="tiny">未抽到希梅爾茲，不抽第三洞</span>`}</div></div>`;return {h3,h4}}
+function rollHoles(){oneHoleRoll(true);renderHoleStats()}
+function rollHoles10(){let last;for(let i=0;i<10;i++)last=oneHoleRoll(false);document.getElementById("holeNow").innerHTML=`<div class="stat"><span class="label">批次完成</span><b>已隨機 10 次</b><div class="tiny">最後一次：第四洞 ${last.h4}${last.h3?`｜第三洞 ${last.h3}`:"｜未觸發第三洞"}</div></div>`;renderHoleStats()}
+function renderHoleStats(){let n=holeData.n||1,h3=Object.entries(holeData.h3).sort((a,b)=>b[1]-a[1]),h4=Object.entries(holeData.h4).sort((a,b)=>b[1]-a[1]),ht=holeData.himei||1;document.getElementById("holeStats").innerHTML=`<div class="stat"><span class="label">累計 ${holeData.n} 次｜第四洞分布</span><div style="line-height:1.8">${h4.map(([k,v])=>`${k}：${v} 次（${(v/n*100).toFixed(2)}%）`).join("<br>")}</div></div><div class="stat" style="margin-top:8px"><span class="label">希梅爾茲觸發第三洞：${holeData.himei} 次</span><div style="line-height:1.8">${h3.length?h3.map(([k,v])=>`${k}：${v} 次（${(v/ht*100).toFixed(2)}%）`).join("<br>"):"尚未觸發第三洞"}</div></div>`}
+function resetHoles(){holeData={n:0,h3:{},h4:{},himei:0};document.getElementById("holeNow").innerHTML="";document.getElementById("holeStats").innerHTML=""}
+
+
+let dragon4={lv:2,tries:0,success:0,stage23:0,stage3S:0};
+let dragon3={lv:3,tries:0,success:0,stage34:0,stage45:0,stage5S:0};
+
+function dragon4Rate(){return dragon4.lv===2?50:dragon4.lv===3?25:0}
+function dragon4Name(){return dragon4.lv>=4?"特級":`LV${dragon4.lv}`}
+function dragon4Once(){
+ if(dragon4.lv>=4){document.getElementById("dragon4Now").innerHTML=`<b class="ok">已達特級</b>`;return}
+ let fromLv=dragon4.lv,from=dragon4Name(),rate=dragon4Rate();
+ if(dragon4.lv===2)dragon4.stage23++;else if(dragon4.lv===3)dragon4.stage3S++;
+ let ok=Math.random()*100<rate;
+ dragon4.tries++;
+ if(ok){
+   const stageAttempts=fromLv===2?dragon4.stage23:dragon4.stage3S;
+   dragon4.success++;
+   dragon4.lv=dragon4.lv===2?3:4;
+ }
+ document.getElementById("dragon4Now").innerHTML=`<div class="tiny">${from} → ${dragon4Name()}｜${ok?'<b class="ok">成功</b>':'<b class="bad">失敗，等級維持</b>'}</div>`;
+ renderDragon4();
+}
+function dragon4ToSpecial(){
+ let batch=0,guard=0;
+ while(dragon4.lv<4 && guard++<100000){
+   let fromLv=dragon4.lv,from=dragon4Name(),rate=dragon4Rate();
+   if(dragon4.lv===2)dragon4.stage23++;else if(dragon4.lv===3)dragon4.stage3S++;
+   dragon4.tries++;batch++;
+   if(Math.random()*100<rate){
+     const stageAttempts=fromLv===2?dragon4.stage23:dragon4.stage3S;
+     dragon4.success++;
+     dragon4.lv=dragon4.lv===2?3:4;
+   }
+ }
+ if(batch===2) starroAnnounce("龍甲附魔","全程一發入魂","第四洞 LV2→LV3→特級｜全程 2 次完成");
+ document.getElementById("dragon4Now").innerHTML=`<b class="ok">特級完成</b><div class="tiny">本次共附魔 ${batch} 次</div>`;
+ renderDragon4();
+}
+function renderDragon4(){
+ document.getElementById("dragon4Stats").innerHTML=`<div class="tiny">目前：<b>${dragon4Name()}</b>　累計附魔：${dragon4.tries} 次</div><div style="line-height:1.9;margin-top:6px"><b>LV2 → LV3：</b>${dragon4.stage23} 次<br><b>LV3 → 特級：</b>${dragon4.stage3S} 次</div>`;
+}
+function resetDragon4(){dragon4={lv:2,tries:0,success:0,stage23:0,stage3S:0};document.getElementById("dragon4Now").innerHTML="";renderDragon4()}
+
+function dragon3Rate(){return dragon3.lv===3?75:dragon3.lv===4?50:dragon3.lv===5?25:0}
+function dragon3Name(){return dragon3.lv>=6?"特級":`LV${dragon3.lv}`}
+function dragon3Once(){
+ if(dragon3.lv>=6){document.getElementById("dragon3Now").innerHTML=`<b class="ok">已達特級</b>`;return}
+ let fromLv=dragon3.lv,from=dragon3Name(),rate=dragon3Rate();
+ if(dragon3.lv===3)dragon3.stage34++;else if(dragon3.lv===4)dragon3.stage45++;else if(dragon3.lv===5)dragon3.stage5S++;
+ let ok=Math.random()*100<rate;
+ dragon3.tries++;
+ if(ok){
+   const stageAttempts=fromLv===3?dragon3.stage34:(fromLv===4?dragon3.stage45:dragon3.stage5S);
+   dragon3.success++;dragon3.lv++;
+ }
+ document.getElementById("dragon3Now").innerHTML=`<div class="tiny">${from} → ${dragon3Name()}｜${ok?'<b class="ok">成功</b>':'<b class="bad">失敗，等級維持</b>'}</div>`;
+ renderDragon3();
+}
+function dragon3ToSpecial(){
+ let batch=0,guard=0;
+ while(dragon3.lv<6 && guard++<100000){
+   let fromLv=dragon3.lv,from=dragon3Name(),rate=dragon3Rate();
+   if(dragon3.lv===3)dragon3.stage34++;else if(dragon3.lv===4)dragon3.stage45++;else if(dragon3.lv===5)dragon3.stage5S++;
+   dragon3.tries++;batch++;
+   if(Math.random()*100<rate){
+     const stageAttempts=fromLv===3?dragon3.stage34:(fromLv===4?dragon3.stage45:dragon3.stage5S);
+     dragon3.success++;dragon3.lv++;
+   }
+ }
+ if(batch===3) starroAnnounce("龍甲附魔","全程一發入魂","第三洞 LV3→LV4→LV5→特級｜全程 3 次完成");
+ document.getElementById("dragon3Now").innerHTML=`<b class="ok">特級完成</b><div class="tiny">本次共附魔 ${batch} 次</div>`;
+ renderDragon3();
+}
+function renderDragon3(){
+ document.getElementById("dragon3Stats").innerHTML=`<div class="tiny">目前：<b>${dragon3Name()}</b>　累計附魔：${dragon3.tries} 次</div><div style="line-height:1.9;margin-top:6px"><b>LV3 → LV4：</b>${dragon3.stage34} 次<br><b>LV4 → LV5：</b>${dragon3.stage45} 次<br><b>LV5 → 特級：</b>${dragon3.stage5S} 次</div>`;
+}
+function resetDragon3(){dragon3={lv:3,tries:0,success:0,stage34:0,stage45:0,stage5S:0};document.getElementById("dragon3Now").innerHTML="";renderDragon3()}
+
+
+let weaponEnchant={lv:1,tries:0,stage12:0,stage23:0,stage34:0,stage45:0};
+function weaponRate(){return weaponEnchant.lv===1?60:weaponEnchant.lv===2?45:weaponEnchant.lv===3?30:weaponEnchant.lv===4?15:0}
+function weaponStageCount(){
+ if(weaponEnchant.lv===1)weaponEnchant.stage12++;
+ else if(weaponEnchant.lv===2)weaponEnchant.stage23++;
+ else if(weaponEnchant.lv===3)weaponEnchant.stage34++;
+ else if(weaponEnchant.lv===4)weaponEnchant.stage45++;
+}
+function weaponOnce(){
+ if(weaponEnchant.lv>=5){document.getElementById("weaponNow").innerHTML=`<b class="ok">已達 LV5</b>`;return}
+ let from=weaponEnchant.lv,rate=weaponRate();weaponStageCount();weaponEnchant.tries++;
+ let ok=Math.random()*100<rate;
+ if(ok){
+   const stageAttempts=from===1?weaponEnchant.stage12:(from===2?weaponEnchant.stage23:(from===3?weaponEnchant.stage34:weaponEnchant.stage45));
+   weaponEnchant.lv++;
+ }
+ document.getElementById("weaponNow").innerHTML=`<div class="tiny">LV${from} → LV${from+1}｜${ok?'<b class="ok">成功</b>':'<b class="bad">失敗，等級維持</b>'}</div>`;
+ renderWeapon();
+}
+function weaponTo5(){
+ let batch=0,guard=0;
+ while(weaponEnchant.lv<5&&guard++<100000){
+   let from=weaponEnchant.lv,rate=weaponRate();
+   weaponStageCount();weaponEnchant.tries++;batch++;
+   if(Math.random()*100<rate){
+     const stageAttempts=from===1?weaponEnchant.stage12:(from===2?weaponEnchant.stage23:(from===3?weaponEnchant.stage34:weaponEnchant.stage45));
+     weaponEnchant.lv++;
+   }
+ }
+ if(batch===4) starroAnnounce("善惡武器附魔","全程一發入魂","LV1→LV2→LV3→LV4→LV5｜全程 4 次完成");
+ document.getElementById("weaponNow").innerHTML=`<b class="ok">LV5 完成</b><div class="tiny">本次共附魔 ${batch} 次</div>`;
+ renderWeapon();
+}
+function renderWeapon(){
+ document.getElementById("weaponStats").innerHTML=`<div class="tiny">目前：<b>LV${weaponEnchant.lv}</b>　累計附魔：${weaponEnchant.tries} 次</div>
+ <div style="line-height:1.9;margin-top:6px"><b>LV1 → LV2：</b>${weaponEnchant.stage12} 次<br><b>LV2 → LV3：</b>${weaponEnchant.stage23} 次<br><b>LV3 → LV4：</b>${weaponEnchant.stage34} 次<br><b>LV4 → LV5：</b>${weaponEnchant.stage45} 次</div>`;
+}
+function resetWeapon(){
+ weaponEnchant={lv:1,tries:0,stage12:0,stage23:0,stage34:0,stage45:0};
+ document.getElementById("weaponNow").innerHTML="";
+ renderWeapon();
+}
+
+
+const urGemGroups=[
+ {w:50,items:["物理素質爆發石","魔法素質爆發石","無敵石","莎拉石"]},
+ {w:30,items:["魔法滲透石","物理連擊石","魔法連擊石","爆擊連擊石","近距離物理終傷石","遠距離物理終傷石","全屬性魔法終傷石"]},
+ {w:20,items:["解除石","精煉石","再次追加石","再次施放石","屬性克制石"]}
+];
+let urGemData={opens:0,box2:0,gems:{}};
+
+function rollUrGem2(){
+ let r=Math.random()*100,group=urGemGroups[2];
+ if(r<50)group=urGemGroups[0]; else if(r<80)group=urGemGroups[1];
+ return pick(group.items);
+}
+function oneUrGem1(show=true){
+ urGemData.opens++;
+ let hit=Math.random()*100<0.5,gem=null;
+ if(hit){
+   urGemData.box2++;
+   gem=rollUrGem2();
+   urGemData.gems[gem]=(urGemData.gems[gem]||0)+1;
+ }
+ if(show){
+   document.getElementById("urGemNow").innerHTML=hit
+    ?`<div class="stat"><b class="ok">抽到 UR寶石箱(2)！</b><div style="margin-top:6px">獲得：<b>${gem}</b></div></div>`
+    :`<div class="stat"><b>UR寶石箱(1)</b><div class="tiny">本次未抽到 UR寶石箱(2)</div></div>`;
+ }
+ return {hit,gem};
+}
+function urGem1Once(){oneUrGem1(true);renderUrGem()}
+function urGemBatch(count){
+ let hits=[];
+ for(let i=0;i<count;i++){let x=oneUrGem1(false);if(x.hit)hits.push(x.gem)}
+ let summary=hits.length
+   ?`UR寶石箱(2)：${hits.length} 個${hits.length<=20?`｜${hits.join("、")}`:""}`
+   :"未抽到 UR寶石箱(2)";
+ document.getElementById("urGemNow").innerHTML=`<div class="stat"><b>已開 ${count.toLocaleString()} 次</b><div class="tiny">${summary}</div></div>`;
+ renderUrGem();
+}
+function renderUrGem(){
+ let rate=urGemData.opens?urGemData.box2/urGemData.opens*100:0;
+ let gems=Object.entries(urGemData.gems).sort((a,b)=>b[1]-a[1]);
+ document.getElementById("urGemStats").innerHTML=`<div class="stat"><span class="label">累計開箱</span><b>${urGemData.opens.toLocaleString()} 次</b><br><span class="label">UR寶石箱(2)</span><b class="ok">${urGemData.box2} 個</b>${gems.length?`<div class="tiny" style="margin-top:8px;line-height:1.8">${gems.map(([k,v])=>`${k}：${v}`).join("<br>")}</div>`:""}</div>`;
+}
+function resetUrGem(){urGemData={opens:0,box2:0,gems:{}};document.getElementById("urGemNow").innerHTML="";document.getElementById("urGemStats").innerHTML=""}
+
+
+
+
+/* ===== SSS評級系統 ===== */
+let sssState={attempts:0,successes:0,cost:0};
+const SSS_RATE=0.15;
+const SSS_COST=500;
+
+function sssOne(){
+ sssState.attempts++;
+ sssState.cost+=SSS_COST;
+ const ok=Math.random()<SSS_RATE;
+ if(ok)sssState.successes++;
+ return ok;
+}
+
+function sssRender(message=""){
+ const fail=sssState.attempts-sssState.successes;
+ const actual=sssState.attempts ? (sssState.successes/sssState.attempts*100).toFixed(2) : "0.00";
+ document.getElementById("sssStats").innerHTML=
+ `<div class="stat">
+   <span class="label">累計評級</span><b>${sssState.attempts.toLocaleString()} 次</b>
+   <div class="tiny" style="margin-top:6px">
+     SSS成功 ${sssState.successes.toLocaleString()} 次｜失敗 ${fail.toLocaleString()} 次｜實際成功率 ${actual}%
+   </div>
+ </div>`;
+ if(message){
+   document.getElementById("sssNow").innerHTML=`<div class="stat"><b>${message}</b></div>`;
+ }
+}
+
+function sssBatch(count){
+ let hits=0;
+ for(let i=0;i<count;i++) if(sssOne()) hits++;
+ sssRender(`本次評級 ${count.toLocaleString()} 次｜SSS ${hits.toLocaleString()} 次`);
+ if(hits>0 && count<=3) starroAnnounce("SSS評級","3次內通過 SSS",`本次 ${count.toLocaleString()} 次評級中成功 ${hits.toLocaleString()} 次`);
+}
+
+function sssUntilSuccess(){
+ let tries=0;
+ do{
+   tries++;
+ }while(!sssOne());
+ sssRender(`本次第 ${tries.toLocaleString()} 次成功 SSS`);
+ if(tries<=3) starroAnnounce("SSS評級","3次內通過 SSS",`第 ${tries.toLocaleString()} 次成功`);
+}
+
+function sssReset(){
+ sssState={attempts:0,successes:0,cost:0};
+ document.getElementById("sssNow").innerHTML="";
+ document.getElementById("sssStats").innerHTML="";
+}
+
+
+/* ===== 跑馬燈遊戲 ===== */
+const marqueeOptions=[
+  {key:"red",name:"紅色",icon:"🔴",p:46.15,pay:1},
+  {key:"yellow",name:"黃色",icon:"🟡",p:23.08,pay:3},
+  {key:"green",name:"綠色",icon:"🟢",p:15.38,pay:5},
+  {key:"purple",name:"紫色",icon:"🟣",p:7.69,pay:11},
+  {key:"blue",name:"藍色",icon:"🔵",p:3.85,pay:23},
+  {key:"orange",name:"橘色",icon:"🟠",p:3.85,pay:23}
+];
+
+function starroFormatPlayTime(rounds){
+  const totalMinutes=Math.max(0,Math.floor(rounds))*2;
+  const hours=Math.floor(totalMinutes/60);
+  const minutes=totalMinutes%60;
+  if(hours>0 && minutes>0) return `${hours} 小時 ${minutes} 分鐘`;
+  if(hours>0) return `${hours} 小時`;
+  return `${minutes} 分鐘`;
+}
+
+let marqueeState={plays:0,wins:0,totalBet:0,net:0,counts:{red:0,yellow:0,green:0,purple:0,blue:0,orange:0}};
+let marqueeRoad=[];
+let marqueePreviewBase=0;
+
+function marqueeRoll(){
+  let r=Math.random()*100, acc=0;
+  for(const x of marqueeOptions){
+    acc+=x.p;
+    if(r<acc)return x;
+  }
+  return marqueeOptions[marqueeOptions.length-1];
+}
+
+let marqueeWheelRotation=0;
+
+function marqueeHighlight(key){
+  const wheel=document.getElementById("marqueeWheel");
+  const label=document.getElementById("marqueeWheelLabel");
+  if(!wheel)return;
+
+  // 依遊戲截圖配置：
+  // 紅6大格、黃3大格、綠2大格、紫1中格、藍1小格、橘1小格。
+  const segments=[
+{key:"orange",start:0.000000,end:13.846154},
+    {key:"red",start:13.846154,end:41.538461},
+    {key:"purple",start:41.538461,end:69.230769},
+    {key:"red",start:69.230769,end:96.923077},
+    {key:"yellow",start:96.923077,end:124.615385},
+    {key:"red",start:124.615385,end:152.307692},
+    {key:"green",start:152.307692,end:180.000000},
+    {key:"blue",start:180.000000,end:193.846154},
+    {key:"red",start:193.846154,end:221.538461},
+    {key:"yellow",start:221.538461,end:249.230769},
+    {key:"red",start:249.230769,end:276.923077},
+    {key:"green",start:276.923077,end:304.615385},
+    {key:"red",start:304.615385,end:332.307692},
+    {key:"yellow",start:332.307692,end:360.000000}
+  ];
+
+  if(!key){
+    if(label)label.textContent="等待開獎";
+    return;
+  }
+
+  const candidates=segments.filter(s=>s.key===key);
+  if(!candidates.length)return;
+
+  const seg=candidates[Math.floor(Math.random()*candidates.length)];
+  const target=(seg.start+seg.end)/2;
+
+  const opt=marqueeOptions.find(x=>x.key===key);
+  const extraTurns=5*360;
+  const currentMod=((marqueeWheelRotation%360)+360)%360;
+  const desired=(360-target)%360;
+  const delta=(desired-currentMod+360)%360;
+  marqueeWheelRotation += extraTurns + delta;
+
+  wheel.style.transform=`rotate(${marqueeWheelRotation}deg)`;
+  if(label)label.innerHTML=`開獎：${opt.icon} <b>${opt.name}</b>`;
+}
+
+function marqueeRender(){
+  const rows=marqueeOptions.map(x=>{
+    const c=marqueeState.counts[x.key]||0;
+    const rate=marqueeState.plays?c/marqueeState.plays*100:0;
+    return `${x.icon} ${x.name}：${c.toLocaleString()} 次（${rate.toFixed(2)}%）`;
+  }).join("<br>");
+  document.getElementById("marqueeStats").innerHTML=
+    `<div class="stat"><span class="label">累計 ${marqueeState.plays.toLocaleString()} 局</span>`+
+    `<div class="tiny" style="line-height:1.8;margin-top:6px">`+
+    `累計下注 ${marqueeState.totalBet.toLocaleString()} 紅｜累計淨輸贏 <b class="${marqueeState.net>=0?"ok":"bad"}">${marqueeState.net>=0?"+":""}${marqueeState.net.toLocaleString()} 紅</b><br>`+
+    `累計花費時間：${starroFormatPlayTime(marqueeState.plays)}<br>`+
+    `${rows}</div></div>`;
+}
+
+function marqueePlay(n){
+  const bets=[];
+
+  for(let i=1;i<=4;i++){
+    const color=document.getElementById(`marqueeBetColor${i}`).value;
+    const amount=Math.max(0,Math.floor(+document.getElementById(`marqueeBetAmount${i}`).value||0));
+
+    if(amount>0){
+      if(!color) return alert(`第 ${i} 色有下注金額時，請選擇顏色`);
+      const opt=marqueeOptions.find(x=>x.key===color);
+      bets.push({opt,amount});
+    }
+  }
+
+  if(!bets.length) return alert("請至少下注一種顏色");
+
+  const totalPerRound=bets.reduce((s,b)=>s+b.amount,0);
+  if(totalPerRound>5000) return alert("每局最多只能下注 5,000 紅");
+
+  const uniqueColors=new Set(bets.map(b=>b.opt.key));
+  if(uniqueColors.size!==bets.length) return alert("下注顏色不能重複");
+
+  let last=null;
+  let roundNet=0;
+  let totalStake=0;
+  let actualRuns=0;
+  let stoppedByWin=false;
+  const hitMap={};
+
+  for(const b of bets) hitMap[b.opt.key]=[];
+
+  for(let i=1;i<=n;i++){
+    const x=marqueeRoll();
+    last=x;
+    if(marqueeRoad.length) marqueeRoad.push(x);
+    actualRuns++;
+    marqueeState.plays++;
+    marqueeState.counts[x.key]++;
+
+    const stake=totalPerRound;
+    totalStake+=stake;
+    marqueeState.totalBet+=stake;
+
+    let thisNet=-stake;
+    let thisRoundWin=false;
+
+    for(const b of bets){
+      if(x.key===b.opt.key){
+        thisNet += b.amount*(b.opt.pay+1);
+        marqueeState.wins++;
+        hitMap[b.opt.key].push(i);
+        thisRoundWin=true;
+      }
+    }
+
+    roundNet += thisNet;
+    marqueeState.net += thisNet;
+
+    // 跑10次 / 100次時，中獎即停
+    if(n>1 && thisRoundWin){
+      stoppedByWin=true;
+      break;
+    }
+  }
+
+  marqueeHighlight(last.key);
+
+  const betText=bets.map(b=>`${b.opt.icon} ${b.opt.name} ${b.amount.toLocaleString()}紅（1:${b.opt.pay}）`).join(" ＋ ");
+  const hitText=bets.map(b=>{
+    const hits=hitMap[b.opt.key];
+    return `${b.opt.icon}${b.opt.name}：${hits.length} 次${hits.length?`（${hits.map(i=>`第${i}次`).join("、")}）`:""}`;
+  }).join("<br>");
+
+  document.getElementById("marqueeNow").innerHTML=
+    `<div class="stat"><b>原設定 ${n.toLocaleString()} 次｜實際跑 ${actualRuns.toLocaleString()} 次｜最後結果 ${last.icon} ${last.name}</b>`+
+    `<div class="tiny" style="line-height:1.8;margin-top:5px">`+
+    `每局下注：${betText}<br>`+
+    `${stoppedByWin?'<b class="ok">✅ 中獎即停</b><br>':""}`+
+    `本次總下注：${totalStake.toLocaleString()} 紅｜本次淨輸贏：<b class="${roundNet>=0?"ok":"bad"}">${roundNet>=0?"+":""}${roundNet.toLocaleString()} 紅</b><br>`+
+    `本次花費時間：${starroFormatPlayTime(actualRuns)}<br>`+
+    `${hitText}`+
+    `</div></div>`;
+  marqueeRender();
+  if(marqueeRoad.length) marqueeRenderRoad();
+}
+
+
+
+function marqueeRenderRoad(){
+  const el=document.getElementById("marqueePreview");
+  if(!el)return;
+  if(!marqueeRoad.length){el.innerHTML="";return;}
+
+  const preview=marqueeRoad.slice(0,marqueePreviewBase);
+  const live=marqueeRoad.slice(marqueePreviewBase);
+  const counts={red:0,yellow:0,green:0,purple:0,blue:0,orange:0};
+  preview.forEach(x=>counts[x.key]++);
+  const rows=marqueeOptions.map(x=>
+    `${x.icon} ${x.name}：${counts[x.key]} 次`
+  ).join("｜");
+
+  el.innerHTML=
+    `<div class="stat"><span class="label">👀 牌路｜前 ${marqueePreviewBase} 次預覽 + 後續正式下注</span>`+
+    `<div class="tiny" style="line-height:1.8;margin-top:6px">`+
+    `${marqueePreviewBase?`預覽100次分布：${rows}<br>`:""}`+
+    `<b>完整牌路：</b><span style="word-break:break-all">${marqueeRoad.map(x=>x.icon).join("")}</span>`+
+    `${live.length?`<br><b>正式下注已接續 ${live.length} 次</b>`:""}`+
+    `</div></div>`;
+}
+
+function marqueePreview100(){
+  const counts={red:0,yellow:0,green:0,purple:0,blue:0,orange:0};
+  marqueeRoad=[];
+  for(let i=0;i<100;i++){
+    const x=marqueeRoll();
+    counts[x.key]++;
+    marqueeRoad.push(x);
+  }
+  marqueePreviewBase=100;
+  const last=marqueeRoad[marqueeRoad.length-1];
+  marqueeHighlight(last.key);
+  marqueeRenderRoad();
+}
+
+function marqueeReset(){
+  marqueeState={plays:0,wins:0,totalBet:0,net:0,counts:{red:0,yellow:0,green:0,purple:0,blue:0,orange:0}};
+  document.getElementById("marqueeNow").innerHTML="";
+  document.getElementById("marqueeStats").innerHTML="";
+  const mp=document.getElementById("marqueePreview"); if(mp)mp.innerHTML="";
+  marqueeWheelRotation=0;
+  const wheel=document.getElementById("marqueeWheel");
+  if(wheel)wheel.style.transform="rotate(0deg)";
+  marqueeHighlight("");
+  marqueeRoad=[]; marqueePreviewBase=0;
+}
+
+/* ===== 21點 ===== */
+let bjState={chips:2000000,deck:[],player:[],dealer:[],bet:0,active:false,rounds:0,w:0,l:0,p:0};
+
+function bjBuildDeck(){
+ const ranks=["A","2","3","4","5","6","7","8","9","10","J","Q","K"];
+ let d=[];
+ for(let k=0;k<6;k++)for(let s=0;s<4;s++)for(const r of ranks)d.push(r);
+ for(let i=d.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}
+ return d;
+}
+function bjDraw(){
+ if(bjState.deck.length<52)bjState.deck=bjBuildDeck();
+ return bjState.deck.pop();
+}
+function bjValue(hand){
+ let total=0,aces=0;
+ for(const c of hand){
+   if(c==="A"){total+=11;aces++}
+   else if(["J","Q","K"].includes(c))total+=10;
+   else total+=+c;
+ }
+ while(total>21&&aces>0){total-=10;aces--}
+ return total;
+}
+function bjBlackjack(hand){return hand.length===2&&bjValue(hand)===21}
+function bjButtons(on){
+ for(const id of ["bjHitBtn","bjStandBtn","bjDoubleBtn"]){
+   const e=document.getElementById(id);if(e)e.disabled=!on;
+ }
+ if(on&&bjState.player.length!==2){let d=document.getElementById("bjDoubleBtn");if(d)d.disabled=true}
+}
+function bjRender(hideDealer=true,msg=""){
+ const pv=bjValue(bjState.player);
+ const shown=hideDealer&&bjState.active?[bjState.dealer[0],"🂠"]:bjState.dealer;
+ const dv=hideDealer&&bjState.active?"?":bjValue(bjState.dealer);
+ document.getElementById("bjChips").textContent=bjState.chips.toLocaleString()+" P";
+ document.getElementById("bjTable").innerHTML=`<div class="stat">
+ <span class="label">莊家｜${dv}</span><div style="font-size:28px;margin:6px 0">${shown.join("　")}</div>
+ <hr><span class="label">玩家｜${pv}</span><div style="font-size:28px;margin:6px 0">${bjState.player.join("　")}</div>
+ ${msg?`<div style="margin-top:8px"><b>${msg}</b></div>`:""}
+ </div>`;
+}
+function bjNewRound(){
+ if(bjState.active)return;
+ let bet=10000;
+ if(bet>bjState.chips)return alert("籌碼不足");
+ if(!bjState.deck.length)bjState.deck=bjBuildDeck();
+ bjState.bet=bet;bjState.chips-=bet;bjState.player=[bjDraw(),bjDraw()];bjState.dealer=[bjDraw(),bjDraw()];bjState.active=true;bjState.rounds++;
+ bjButtons(true);bjRender(true);
+ if(bjBlackjack(bjState.player)||bjBlackjack(bjState.dealer))bjFinish();
+}
+function bjHit(){
+ if(!bjState.active)return;
+ bjState.player.push(bjDraw());bjRender(true);
+ let v=bjValue(bjState.player);
+ if(v>21)bjFinish("玩家爆牌");
+ else if(v===21 || bjState.player.length>=5)bjStand();
+ else bjButtons(true);
+}
+function bjStand(){
+ if(!bjState.active)return;
+ while(bjValue(bjState.dealer)<17)bjState.dealer.push(bjDraw());
+ bjFinish();
+}
+function bjDouble(){
+ if(!bjState.active||bjState.player.length!==2)return;
+ if(bjState.chips<bjState.bet)return alert("籌碼不足以加倍");
+ bjState.chips-=bjState.bet;bjState.bet*=2;
+ bjState.player.push(bjDraw());
+ if(bjValue(bjState.player)<=21)while(bjValue(bjState.dealer)<17)bjState.dealer.push(bjDraw());
+ bjFinish();
+}
+function bjFinish(force=""){
+ if(!bjState.active)return;
+ const p=bjValue(bjState.player),d=bjValue(bjState.dealer);
+ const pb=bjBlackjack(bjState.player),db=bjBlackjack(bjState.dealer);
+ let result="",pay=0;
+ if(force==="玩家爆牌"||p>21){result="玩家爆牌｜莊家勝";bjState.l++}
+ else if(d>21){result="莊家爆牌｜玩家勝";pay=bjState.bet*2;bjState.w++}
+ else if(pb&&!db){result="Blackjack！玩家勝｜+20,000 P";pay=bjState.bet*3;bjState.w++}
+ else if(db&&!pb){result="莊家 Blackjack｜-10,000 P";bjState.l++}
+ else if(p>d){result="玩家勝";pay=bjState.bet*2;bjState.w++}
+ else if(p<d){result=`莊家勝${d===21?"（21點）":""}｜-10,000 P`;bjState.l++}
+ else{result="平手｜退回下注";pay=bjState.bet;bjState.p++}
+ bjState.chips+=Math.floor(pay);bjState.active=false;bjButtons(false);bjRender(false,result);
+ document.getElementById("bjLog").innerHTML=`<div class="tiny">局數 ${bjState.rounds}｜勝 ${bjState.w}｜負 ${bjState.l}｜和 ${bjState.p}</div>`;
+}
+function bjReset(){
+ bjState={chips:500000,deck:bjBuildDeck(),player:[],dealer:[],bet:0,active:false,rounds:0,w:0,l:0,p:0};
+ bjButtons(false);document.getElementById("bjChips").textContent="500,000 P";document.getElementById("bjTable").innerHTML="";document.getElementById("bjLog").innerHTML="";
+}
+
+/* ===== 推筒子 ===== */
+let ttState={rounds:0,w:0,l:0,net:0};
+let ttRoad=[];
+let ttPreviewBase=0;
+const TT_BET=100000;
+
+function ttDeck(){
+ let d=[];
+ // 一筒～九筒各4張
+ for(let v=1;v<=9;v++){
+   for(let i=0;i<4;i++) d.push({name:`${v}筒`,v:v});
+ }
+ // 白板4張，按半點
+ for(let i=0;i<4;i++) d.push({name:"白板",v:0.5});
+
+ // 洗牌
+ for(let i=d.length-1;i>0;i--){
+   let j=Math.floor(Math.random()*(i+1));
+   [d[i],d[j]]=[d[j],d[i]];
+ }
+ return d;
+}
+
+
+function ttDealerHand(deck){
+ // 一般兩張同牌對子機率：3/39 ≈ 7.69%
+ // 莊家設定比一般玩家高 5 個百分點 → 約 12.69%
+ const dealerPairRate=(3/39)+0.05;
+
+ const firstIndex=Math.floor(Math.random()*deck.length);
+ const first=deck.splice(firstIndex,1)[0];
+
+ let secondIndex=-1;
+ if(Math.random()<dealerPairRate){
+   const same=[];
+   for(let i=0;i<deck.length;i++){
+     if(deck[i].name===first.name)same.push(i);
+   }
+   if(same.length)secondIndex=same[Math.floor(Math.random()*same.length)];
+ }
+
+ // 若這局不觸發莊家加成，強制選不同牌，讓最終莊家對子率維持約 12.69%。
+ if(secondIndex<0){
+   const different=[];
+   for(let i=0;i<deck.length;i++){
+     if(deck[i].name!==first.name)different.push(i);
+   }
+   secondIndex=different[Math.floor(Math.random()*different.length)];
+ }
+
+ const second=deck.splice(secondIndex,1)[0];
+ return [first,second];
+}
+
+function ttHandRank(h){
+ const pair=h[0].name===h[1].name;
+ if(pair){
+   if(h[0].name==="白板") return {type:2,val:10.5,label:"白板對"};
+   return {type:2,val:h[0].v,label:`${h[0].name}對`};
+ }
+ let sum=h[0].v+h[1].v;
+ let point=sum>=10 ? sum-10 : sum;
+ return {type:1,val:point,label:`${point}點`};
+}
+
+function ttCompare(player,dealer){
+ const p=ttHandRank(player),d=ttHandRank(dealer);
+ if(p.type!==d.type) return p.type>d.type ? 1 : -1;
+ if(p.val!==d.val) return p.val>d.val ? 1 : -1;
+ return -1; // 同點莊家勝
+}
+
+function ttPlay(){
+ let handCount=Math.max(1,Math.min(10,+document.getElementById("ttHands").value||1));
+ let d=ttDeck();
+
+ // One shared dealer hand for all simultaneous player bets.
+ // Dealer pair chance is intentionally 5 percentage points above the normal player baseline.
+ let dealer=ttDealerHand(d);
+ let dr=ttHandRank(dealer);
+
+ let results=[];
+ let roundNet=0;
+ for(let i=1;i<=handCount;i++){
+   // Rebuild/shuffle if somehow short, while keeping the same dealer result.
+   if(d.length<2)d=ttDeck();
+   let player=[d.pop(),d.pop()];
+   let pr=ttHandRank(player),cmp=ttCompare(player,dealer);
+   ttState.rounds++;
+
+   let delta=0,result="";
+   if(cmp>0){
+     ttState.w++;
+     delta=TT_BET;
+     result=`玩家勝｜+${delta.toLocaleString()} P`;
+   }else{
+     ttState.l++;
+     delta=-TT_BET;
+     result=`莊家勝｜-${TT_BET.toLocaleString()} P`;
+   }
+   ttState.net+=delta;
+   roundNet+=delta;
+   results.push({i,player,pr,cmp,delta,result});
+   if(ttRoad.length) ttRoad.push({cmp});
+ }
+
+ document.getElementById("ttNet").textContent=
+   `${ttState.net>=0?"+":""}${ttState.net.toLocaleString()} P`;
+
+ document.getElementById("ttTable").innerHTML=
+ `<div class="stat">
+   <span class="label">本局共用莊家｜${dr.label}</span>
+   <div style="font-size:24px;margin:6px 0">${dealer.map(x=>x.name).join("　")}</div>
+   <div class="tiny">本局 ${handCount} 手｜每手 100,000 P｜本局合計 ${roundNet>=0?"+":""}${roundNet.toLocaleString()} P｜本局花費時間 ${starroFormatPlayTime(handCount)}</div>
+ </div>`+
+ results.map(x=>`<div class="stat" style="margin-top:8px">
+   <span class="label">下注 ${x.i}｜${x.pr.label}</span>
+   <div style="font-size:22px;margin:6px 0">${x.player.map(v=>v.name).join("　")}</div>
+   <b class="${x.cmp>0?"ok":"bad"}">${x.result}</b>
+ </div>`).join("");
+
+ document.getElementById("ttStats").innerHTML=
+ `<div class="tiny">累計下注手數 ${ttState.rounds}｜玩家勝 ${ttState.w}｜莊家勝 ${ttState.l}｜每手固定 100,000 P｜累計花費時間 ${starroFormatPlayTime(ttState.rounds)}</div>`;
+ if(ttRoad.length) ttRenderRoad();
+}
+
+
+
+function ttRenderRoad(){
+  const el=document.getElementById("ttPreview");
+  if(!el)return;
+  if(!ttRoad.length){el.innerHTML="";return;}
+
+  const preview=ttRoad.slice(0,ttPreviewBase);
+  const live=ttRoad.slice(ttPreviewBase);
+  const playerWin=preview.filter(x=>x.cmp>0).length;
+  const dealerWin=preview.filter(x=>x.cmp<=0).length;
+  const road=ttRoad.map(x=>x.cmp>0?"🔵":"🔴").join("");
+
+  el.innerHTML=
+    `<div class="stat"><span class="label">👀 牌路｜前 ${ttPreviewBase} 把預覽 + 後續正式下注</span>`+
+    `<div class="tiny" style="line-height:1.8;margin-top:6px">`+
+    `${ttPreviewBase?`預覽100把：🔵 玩家勝 ${playerWin}｜🔴 莊家勝 ${dealerWin}<br>`:""}`+
+    `<b>完整牌路：</b><span style="word-break:break-all">${road}</span>`+
+    `${live.length?`<br><b>正式下注已接續 ${live.length} 把</b>`:""}`+
+    `</div></div>`;
+}
+
+function ttPreview100(){
+  ttRoad=[];
+  for(let n=0;n<100;n++){
+    let d=ttDeck();
+    const dealer=ttDealerHand(d);
+    if(d.length<2)d=ttDeck();
+    const player=[d.pop(),d.pop()];
+    const cmp=ttCompare(player,dealer);
+    ttRoad.push({cmp});
+  }
+  ttPreviewBase=100;
+  ttRenderRoad();
+}
+
+function ttReset(){
+ ttState={rounds:0,w:0,l:0,net:0};
+ document.getElementById("ttNet").textContent="0 P";
+ document.getElementById("ttTable").innerHTML="";
+ document.getElementById("ttStats").innerHTML="";
+ const tp=document.getElementById("ttPreview"); if(tp)tp.innerHTML="";
+ ttRoad=[]; ttPreviewBase=0;
+}
+
+renderSteps();
+</script>
+<script>
+(() => {
+  const rates = {
+    20:0.75,
+    21:0.50,
+    22:0.25,
+    23:0.10,
+    24:0.05,
+    25:0.03,
+    26:0.02,
+    27:0.01,
+    28:0.01,
+    29:0.01
+  };
+
+  let state = {
+    level:20,
+    totalHammers:0,
+    totalCost:0,
+    stageAttempts:{20:0,21:0,22:0,23:0,24:0,25:0,26:0,27:0,28:0,29:0}
+  };
+  const HAMMER_COST = 15000;
+
+  const el = id => document.getElementById(id);
+
+  function renderStats() {
+    const box = el("refine30Stats");
+    if (!box) return;
+
+    const stageRows = [];
+    for (let lv=20; lv<=29; lv++) {
+      if (state.stageAttempts[lv] > 0) {
+        stageRows.push(`+${lv}→+${lv+1}：累計 ${state.stageAttempts[lv].toLocaleString()} 把精煉槌`);
+      }
+    }
+
+    box.innerHTML =
+      `<div class="stat">
+        <span class="label">目前進度</span>
+        <b>目前 +${state.level}｜累計消耗 ${state.totalHammers.toLocaleString()} 把精煉槌</b>
+        <div class="tiny" style="line-height:1.8;margin-top:7px">
+          ${state.level >= 30 ? "<b class='ok'>🎉 已完成 +30</b><br>" : ""}
+          ${stageRows.join("<br>")}
+        </div>
+      </div>`;
+  }
+
+  function useHammers(maxCount) {
+    if (state.level >= 30) {
+      el("refine30Now").innerHTML =
+        `<div class="stat"><b class="ok">目前已經是 +30，不需要再敲。</b></div>`;
+      renderStats();
+      return;
+    }
+
+    const startLevel = state.level;
+    let used = 0;
+    const perStage = {20:0,21:0,22:0,23:0,24:0,25:0,26:0,27:0,28:0,29:0};
+
+    while (used < maxCount && state.level < 30) {
+      const lv = state.level;
+      used++;
+      state.totalHammers++;
+      state.totalCost += HAMMER_COST;
+      state.stageAttempts[lv]++;
+      perStage[lv]++;
+
+      if (Math.random() < rates[lv]) {
+        state.level++;
+        if (state.level >= 30 && state.totalHammers <= 200 && typeof window.starroBroadcast === "function") {
+          window.starroBroadcast("精煉模擬","+30成功",`200把精煉槌內達成｜累計 ${state.totalHammers} 把`);
+        }
+      }
+    }
+
+    const rows = [];
+    for (let lv=20; lv<=29; lv++) {
+      if (perStage[lv] > 0) {
+        rows.push(`+${lv}→+${lv+1}：本次 ${perStage[lv].toLocaleString()} 把`);
+      }
+    }
+
+    el("refine30Now").innerHTML =
+      `<div class="stat">
+        <b>本次消耗 ${used.toLocaleString()} 把精煉槌｜花費 ${(used*HAMMER_COST).toLocaleString()} P｜+${startLevel} → +${state.level}</b>
+        <div class="tiny" style="line-height:1.8;margin-top:6px">
+          ${state.level>=30 ? "🎉 本次已敲到 +30<br>" : ""}
+          ${rows.join("<br>")}
+        </div>
+      </div>`;
+    renderStats();
+  }
+
+  window.refine30Batch = function(n) {
+    useHammers(n);
+  };
+
+  window.refine30One = function() {
+    if (state.level >= 30) {
+      el("refine30Now").innerHTML =
+        `<div class="stat"><b class="ok">目前已經是 +30，不需要再敲。</b></div>`;
+      renderStats();
+      return;
+    }
+
+    const startLevel = state.level;
+    let used = 0;
+    const perStage = {20:0,21:0,22:0,23:0,24:0,25:0,26:0,27:0,28:0,29:0};
+
+    while (state.level < 30) {
+      const lv = state.level;
+      used++;
+      state.totalHammers++;
+      state.totalCost += HAMMER_COST;
+      state.stageAttempts[lv]++;
+      perStage[lv]++;
+
+      if (Math.random() < rates[lv]) {
+        state.level++;
+        if (state.level >= 30 && state.totalHammers <= 200 && typeof window.starroBroadcast === "function") {
+          window.starroBroadcast("精煉模擬","+30成功",`200把精煉槌內達成｜累計 ${state.totalHammers} 把`);
+        }
+      }
+    }
+
+    const rows=[];
+    for(let lv=20;lv<=29;lv++){
+      if(perStage[lv]>0) rows.push(`+${lv}→+${lv+1}：本次 ${perStage[lv].toLocaleString()} 把`);
+    }
+
+    el("refine30Now").innerHTML =
+      `<div class="stat">
+        <b>+${startLevel} → +30｜本次消耗 ${used.toLocaleString()} 把精煉槌｜花費 ${(used*HAMMER_COST).toLocaleString()} P</b>
+        <div class="tiny" style="line-height:1.8;margin-top:6px">${rows.join("<br>")}</div>
+      </div>`;
+    renderStats();
+  };
+
+  window.refine30Reset = function() {
+    state = {
+      level:20,
+      totalHammers:0,
+      totalCost:0,
+      stageAttempts:{20:0,21:0,22:0,23:0,24:0,25:0,26:0,27:0,28:0,29:0}
+    };
+    el("refine30Now").innerHTML="";
+    renderStats();
+  };
+
+  // 初始就顯示目前 +20 / 0把
+  setTimeout(renderStats,0);
+})();
+</script>
+<script>
+(() => {
+  const clear = {attempts:0, success:0, cost:0, bad:0};
+  const eventStone = {attempts:0, success:0, cost:0};
+  const pure = {attempts:0, success:0, cost:0, bad:0};
+
+  const el = id => document.getElementById(id);
+
+  function stats(id, s, badWord="") {
+    const box = el(id);
+    if (!box) return;
+    const actual = s.attempts ? (s.success / s.attempts * 100).toFixed(3) : "0.000";
+    const badText = ("bad" in s) ? `｜${badWord} <b>${s.bad.toLocaleString()} 個</b>` : "";
+    box.innerHTML =
+      `<div class="tiny">累計 ${s.attempts.toLocaleString()} 次｜成功 ${s.success.toLocaleString()} 次${badText}｜實際成功率 ${actual}%<br>` +
+      `累計成本 <b>${s.cost.toLocaleString()} P</b></div>`;
+  }
+
+  window.shieldClearBatch = function(n) {
+    let hits = 0, bads = 0, hitDraws = [];
+    for (let i = 0; i < n; i++) {
+      clear.attempts++;
+      clear.cost += 500;
+      const batchDraw = i + 1;
+
+      if (Math.random() < 0.00033) {
+        clear.success++;
+        hits++;
+        hitDraws.push(batchDraw);
+        if (batchDraw <= 100 && typeof window.starroBroadcast === "function") {
+          window.starroBroadcast("盾牌石","清澈石成功",`100次內中獎｜第 ${batchDraw} 抽`);
+        }
+      }
+      if (Math.random() < 0.10) {
+        clear.bad++;
+        bads++;
+      }
+    }
+
+    const hitText = hitDraws.length ? `｜出貨：${hitDraws.map(x=>`第 ${x} 抽`).join("、")}` : "";
+    el("shieldClearNow").innerHTML =
+      `<div class="stat"><b>本次 ${n.toLocaleString()} 次｜成功 ${hits.toLocaleString()} 次｜腐朽 ${bads.toLocaleString()} 個</b>` +
+      `<div class="tiny">${hitText || "本次未出貨"}<br>本次花費 ${(n * 500).toLocaleString()} P</div></div>`;
+    stats("shieldClearStats", clear, "累計腐朽");
+  };
+
+
+  window.shieldClearUntilHit = function() {
+    let tries = 0, bads = 0;
+    while (true) {
+      tries++;
+      clear.attempts++;
+      clear.cost += 500;
+
+      if (Math.random() < 0.10) {
+        clear.bad++;
+        bads++;
+      }
+
+      if (Math.random() < 0.00033) {
+        clear.success++;
+
+        if (tries <= 100 && typeof window.starroBroadcast === "function") {
+          window.starroBroadcast("盾牌石","清澈石成功",`100次內中獎｜第 ${tries} 抽`);
+        }
+
+        el("shieldClearNow").innerHTML =
+          `<div class="stat"><b class="ok">抽到出｜第 ${tries.toLocaleString()} 抽成功</b>` +
+          `<div class="tiny">本次腐朽 ${bads.toLocaleString()} 個<br>` +
+          `本次花費 ${(tries * 500).toLocaleString()} P</div></div>`;
+        stats("shieldClearStats", clear, "累計腐朽");
+        break;
+      }
+    }
+  };
+
+  window.shieldClearReset = function() {
+    Object.assign(clear, {attempts:0, success:0, cost:0, bad:0});
+    el("shieldClearNow").innerHTML = "";
+    stats("shieldClearStats", clear, "累計腐朽");
+  };
+
+  window.shieldEventBatch = function(n) {
+    let glow = 0, hitDraws = [];
+    for (let i = 0; i < n; i++) {
+      eventStone.attempts++;
+      eventStone.cost += 999;
+      const batchDraw = i + 1;
+      if (Math.random() < 0.001) {
+        eventStone.success++;
+        glow++;
+        hitDraws.push(batchDraw);
+        if (batchDraw <= 100 && typeof window.starroBroadcast === "function") {
+          window.starroBroadcast("盾牌石","活動石變成光芒",`100次內中獎｜第 ${batchDraw} 抽`);
+        }
+      }
+    }
+    const hitText = hitDraws.length ? `｜出貨：${hitDraws.map(x=>`第 ${x} 抽`).join("、")}` : "";
+    el("shieldEventNow").innerHTML =
+      `<div class="stat"><b>本次 ${n.toLocaleString()} 次｜光芒 ${glow.toLocaleString()} 個</b>` +
+      `<div class="tiny">${hitText || "本次未出貨"}<br>本次花費 ${(n * 999).toLocaleString()} P</div></div>`;
+
+    const actual = eventStone.attempts
+      ? (eventStone.success / eventStone.attempts * 100).toFixed(3)
+      : "0.000";
+
+    el("shieldEventStats").innerHTML =
+      `<div class="tiny">累計 ${eventStone.attempts.toLocaleString()} 次｜` +
+      `光芒 <b>${eventStone.success.toLocaleString()} 個</b>｜實際光芒率 ${actual}%<br>` +
+      `累計成本 <b>${eventStone.cost.toLocaleString()} P</b></div>`;
+  };
+
+  window.shieldEventUntilHit = function() {
+    let tries = 0;
+    while (true) {
+      tries++;
+      eventStone.attempts++;
+      eventStone.cost += 999;
+
+      if (Math.random() < 0.001) {
+        eventStone.success++;
+
+        if (tries <= 100 && typeof window.starroBroadcast === "function") {
+          window.starroBroadcast("盾牌石","活動石變成光芒",`100次內中獎｜第 ${tries} 抽`);
+        }
+
+        el("shieldEventNow").innerHTML =
+          `<div class="stat"><b>第 ${tries.toLocaleString()} 抽出光芒</b>` +
+          `<div class="tiny">本次花費 ${(tries * 999).toLocaleString()} P</div></div>`;
+
+        const actual = eventStone.attempts
+          ? (eventStone.success / eventStone.attempts * 100).toFixed(3)
+          : "0.000";
+
+        el("shieldEventStats").innerHTML =
+          `<div class="tiny">累計 ${eventStone.attempts.toLocaleString()} 次｜` +
+          `光芒 <b>${eventStone.success.toLocaleString()} 個</b>｜實際光芒率 ${actual}%<br>` +
+          `累計成本 <b>${eventStone.cost.toLocaleString()} P</b></div>`;
+        break;
+      }
+    }
+  };
+
+  window.shieldEventReset = function() {
+    Object.assign(eventStone, {attempts:0, success:0, cost:0});
+    el("shieldEventNow").innerHTML = "";
+    stats("shieldEventStats", eventStone);
+  };
+
+  window.glovePureBatch = function(n) {
+    let hits = 0, bads = 0, hitDraws = [];
+    for (let i = 0; i < n; i++) {
+      pure.attempts++;
+      pure.cost += 500;
+      const batchDraw = i + 1;
+
+      if (Math.random() < 0.0033) {
+        pure.success++;
+        hits++;
+        hitDraws.push(batchDraw);
+        if (batchDraw <= 100 && typeof window.starroBroadcast === "function") {
+          window.starroBroadcast("手套石","純潔石成功",`100次內中獎｜第 ${batchDraw} 抽`);
+        }
+      }
+      if (Math.random() < 0.10) {
+        pure.bad++;
+        bads++;
+      }
+    }
+
+    const hitText = hitDraws.length ? `｜出貨：${hitDraws.map(x=>`第 ${x} 抽`).join("、")}` : "";
+    el("glovePureNow").innerHTML =
+      `<div class="stat"><b>本次 ${n.toLocaleString()} 次｜成功 ${hits.toLocaleString()} 次｜雜念 ${bads.toLocaleString()} 個</b>` +
+      `<div class="tiny">${hitText || "本次未出貨"}<br>本次花費 ${(n * 500).toLocaleString()} P</div></div>`;
+    stats("glovePureStats", pure, "累計雜念");
+  };
+
+
+  window.glovePureUntilHit = function() {
+    let tries = 0, bads = 0;
+    while (true) {
+      tries++;
+      pure.attempts++;
+      pure.cost += 500;
+
+      if (Math.random() < 0.10) {
+        pure.bad++;
+        bads++;
+      }
+
+      if (Math.random() < 0.0033) {
+        pure.success++;
+
+        if (tries <= 100 && typeof window.starroBroadcast === "function") {
+          window.starroBroadcast("手套石","純潔石成功",`100次內中獎｜第 ${tries} 抽`);
+        }
+
+        el("glovePureNow").innerHTML =
+          `<div class="stat"><b class="ok">抽到出｜第 ${tries.toLocaleString()} 抽成功</b>` +
+          `<div class="tiny">本次雜念 ${bads.toLocaleString()} 個<br>` +
+          `本次花費 ${(tries * 500).toLocaleString()} P</div></div>`;
+        stats("glovePureStats", pure, "累計雜念");
+        break;
+      }
+    }
+  };
+
+  window.glovePureReset = function() {
+    Object.assign(pure, {attempts:0, success:0, cost:0, bad:0});
+    el("glovePureNow").innerHTML = "";
+    stats("glovePureStats", pure, "累計雜念");
+  };
+})();
+</script>
+<script>
+
+const baccaratBetDefs=[
+  {id:"bacBetPlayer",key:"player",name:"閒贏",pay:1.0},
+  {id:"bacBetBanker",key:"banker",name:"莊贏",pay:0.95},
+  {id:"bacBetTie",key:"tie",name:"和局",pay:8.0},
+  {id:"bacBetPlayerPair",key:"playerPair",name:"閒對",pay:11.0},
+  {id:"bacBetBankerPair",key:"bankerPair",name:"莊對",pay:11.0},
+  {id:"bacBetBig",key:"big",name:"大",pay:0.53},
+  {id:"bacBetSmall",key:"small",name:"小",pay:1.45},
+  {id:"bacBetPlayerOdd",key:"playerOdd",name:"閒單",pay:0.95},
+  {id:"bacBetPlayerEven",key:"playerEven",name:"閒雙",pay:0.88},
+  {id:"bacBetBankerOdd",key:"bankerOdd",name:"莊單",pay:0.92},
+  {id:"bacBetBankerEven",key:"bankerEven",name:"莊雙",pay:0.92}
+];
+
+let baccaratState={rounds:0,totalBet:0,net:0,player:0,banker:0,tie:0};
+let baccaratRoad=[];
+let baccaratPreviewBase=0;
+
+function baccaratCard(){
+  const ranks=[1,2,3,4,5,6,7,8,9,10,11,12,13];
+  const rank=ranks[Math.floor(Math.random()*ranks.length)];
+  const point=rank>=10?0:rank;
+  const text=rank===1?"A":rank===11?"J":rank===12?"Q":rank===13?"K":String(rank);
+  return {rank,point,text};
+}
+function baccaratPoint(cards){
+  return cards.reduce((s,c)=>s+c.point,0)%10;
+}
+function baccaratDeal(){
+  const p=[baccaratCard(),baccaratCard()];
+  const b=[baccaratCard(),baccaratCard()];
+  const pPair=p[0].rank===p[1].rank;
+  const bPair=b[0].rank===b[1].rank;
+  let pp=baccaratPoint(p), bp=baccaratPoint(b);
+
+  // Natural 8/9: neither side draws.
+  if(pp<8 && bp<8){
+    let p3=null;
+    if(pp<=5){
+      p3=baccaratCard();
+      p.push(p3);
+      pp=baccaratPoint(p);
+    }
+
+    if(!p3){
+      if(bp<=5) b.push(baccaratCard());
+    }else{
+      const v=p3.point;
+      if(bp<=2) b.push(baccaratCard());
+      else if(bp===3 && v!==8) b.push(baccaratCard());
+      else if(bp===4 && v>=2 && v<=7) b.push(baccaratCard());
+      else if(bp===5 && v>=4 && v<=7) b.push(baccaratCard());
+      else if(bp===6 && (v===6 || v===7)) b.push(baccaratCard());
+    }
+    bp=baccaratPoint(b);
+  }
+
+  const winner=pp>bp?"player":bp>pp?"banker":"tie";
+  const totalCards=p.length+b.length;
+  return {
+    p,b,pp,bp,winner,
+    playerPair:pPair,bankerPair:bPair,
+    big:totalCards>=5,small:totalCards===4,
+    playerOdd:pp%2===1,playerEven:pp%2===0,
+    bankerOdd:bp%2===1,bankerEven:bp%2===0
+  };
+}
+function baccaratGetBets(){
+  const bets=[];
+  for(const d of baccaratBetDefs){
+    const el=document.getElementById(d.id);
+    const amount=Math.max(0,Math.floor(+el.value||0));
+    if(amount>0) bets.push({...d,amount});
+  }
+  const total=bets.reduce((s,b)=>s+b.amount,0);
+  if(total<=0){ alert("請至少下注一項"); return null; }
+  if(total>30000){ alert("每局下注總額最高 30,000 紅利"); return null; }
+  return {bets,total};
+}
+function baccaratBetWon(key,r){
+  if(key==="player") return r.winner==="player";
+  if(key==="banker") return r.winner==="banker";
+  if(key==="tie") return r.winner==="tie";
+  return !!r[key];
+}
+function baccaratPlay(n){
+  const got=baccaratGetBets();
+  if(!got)return;
+  const {bets,total}=got;
+  let last=null, batchNet=0, batchBet=0;
+  let batchP=0,batchB=0,batchT=0;
+
+  for(let i=0;i<n;i++){
+    const r=baccaratDeal();
+    last=r;
+    if(baccaratRoad.length) baccaratRoad.push(r);
+    baccaratState.rounds++;
+    baccaratState.totalBet+=total;
+    batchBet+=total;
+
+    if(r.winner==="player"){baccaratState.player++;batchP++;}
+    else if(r.winner==="banker"){baccaratState.banker++;batchB++;}
+    else {baccaratState.tie++;batchT++;}
+
+    let net=-total;
+    for(const bet of bets){
+      // When the hand is a tie, Player/Banker bets are returned.
+      if(r.winner==="tie" && (bet.key==="player" || bet.key==="banker")){
+        net += bet.amount;
+      }else if(baccaratBetWon(bet.key,r)){
+        net += bet.amount*(bet.pay+1);
+      }
+    }
+    batchNet+=net;
+    baccaratState.net+=net;
+  }
+
+  const cardsText=a=>a.map(c=>c.text).join("、");
+  const winText=last.winner==="player"?"閒贏":last.winner==="banker"?"莊贏":"和局";
+  const specials=[
+    last.playerPair?"閒對":"",
+    last.bankerPair?"莊對":"",
+    last.big?"大":"小",
+    last.playerOdd?"閒單":"閒雙",
+    last.bankerOdd?"莊單":"莊雙"
+  ].filter(Boolean).join("｜");
+
+  document.getElementById("baccaratNow").innerHTML=
+    `<div class="stat"><b>最後一局：${winText}</b>`+
+    `<div class="tiny" style="line-height:1.8;margin-top:5px">`+
+    `閒：${cardsText(last.p)} → <b>${last.pp}點</b><br>`+
+    `莊：${cardsText(last.b)} → <b>${last.bp}點</b><br>`+
+    `${specials}<br>`+
+    `本次 ${n.toLocaleString()} 局｜下注 ${batchBet.toLocaleString()} 紅利｜淨輸贏 `+
+    `<b class="${batchNet>=0?"ok":"bad"}">${batchNet>=0?"+":""}${Math.round(batchNet).toLocaleString()} 紅利</b><br>`+
+    `本次花費時間：${starroFormatPlayTime(n)}`+
+    `</div></div>`;
+
+  baccaratRender();
+  if(baccaratRoad.length) baccaratRenderRoad();
+}
+function baccaratRender(){
+  const s=baccaratState;
+  document.getElementById("baccaratStats").innerHTML=
+    `<div class="stat"><span class="label">累計 ${s.rounds.toLocaleString()} 局</span>`+
+    `<div class="tiny" style="line-height:1.8;margin-top:6px">`+
+    `閒贏 ${s.player.toLocaleString()}｜莊贏 ${s.banker.toLocaleString()}｜和局 ${s.tie.toLocaleString()}<br>`+
+    `累計下注 ${s.totalBet.toLocaleString()} 紅利｜累計淨輸贏 `+
+    `<b class="${s.net>=0?"ok":"bad"}">${s.net>=0?"+":""}${Math.round(s.net).toLocaleString()} 紅利</b><br>`+
+    `累計花費時間：${starroFormatPlayTime(s.rounds)}`+
+    `</div></div>`;
+}
+
+
+function baccaratRenderRoad(){
+  const el=document.getElementById("baccaratPreview");
+  if(!el)return;
+  if(!baccaratRoad.length){el.innerHTML="";return;}
+
+  const preview=baccaratRoad.slice(0,baccaratPreviewBase);
+  const live=baccaratRoad.slice(baccaratPreviewBase);
+  const p=preview.filter(r=>r.winner==="player").length;
+  const b=preview.filter(r=>r.winner==="banker").length;
+  const t=preview.filter(r=>r.winner==="tie").length;
+  const road=baccaratRoad.map(r=>r.winner==="player"?"🔵":r.winner==="banker"?"🔴":"🟢").join("");
+
+  el.innerHTML=
+    `<div class="stat"><span class="label">👀 牌路｜前 ${baccaratPreviewBase} 把預覽 + 後續正式下注</span>`+
+    `<div class="tiny" style="line-height:1.8;margin-top:6px">`+
+    `${baccaratPreviewBase?`預覽100把：🔵 閒 ${p}｜🔴 莊 ${b}｜🟢 和 ${t}<br>`:""}`+
+    `<b>完整牌路：</b><span style="word-break:break-all">${road}</span>`+
+    `${live.length?`<br><b>正式下注已接續 ${live.length} 把</b>`:""}`+
+    `</div></div>`;
+}
+
+function baccaratPreview100(){
+  baccaratRoad=[];
+  let p=0,b=0,t=0;
+  for(let i=0;i<100;i++){
+    const r=baccaratDeal();
+    baccaratRoad.push(r);
+    if(r.winner==="player")p++;
+    else if(r.winner==="banker")b++;
+    else t++;
+  }
+  baccaratPreviewBase=100;
+  baccaratRenderRoad();
+}
+
+function baccaratReset(){
+  baccaratState={rounds:0,totalBet:0,net:0,player:0,banker:0,tie:0};
+  document.getElementById("baccaratNow").innerHTML="";
+  document.getElementById("baccaratStats").innerHTML="";
+  const bp=document.getElementById("baccaratPreview"); if(bp)bp.innerHTML="";
+  baccaratRoad=[]; baccaratPreviewBase=0;
+}
+
+</script>
+<script>
+
+/* ===== 繁星大輪盤：實機紀錄 / 公平性分析 ===== */
+const WHEEL_LOG_KEY="starro_wheel_real_log_v1";
+const wheelLogOdds={red:1,yellow:3,green:5,purple:11,blue:23,orange:23};
+const wheelLogNames={red:"紅",yellow:"黃",green:"綠",purple:"紫",blue:"藍",orange:"橘"};
+
+function wheelLogLoad(){
+  try{
+    const x=JSON.parse(localStorage.getItem(WHEEL_LOG_KEY)||"[]");
+    return Array.isArray(x)?x:[];
+  }catch(e){return []}
+}
+let wheelRealLog=wheelLogLoad();
+
+function wheelLogBets(){
+  const ids={red:"wlRed",yellow:"wlYellow",green:"wlGreen",purple:"wlPurple",blue:"wlBlue",orange:"wlOrange"};
+  const bets={};
+  for(const [k,id] of Object.entries(ids)){
+    const el=document.getElementById(id);
+    bets[k]=Math.max(0,Math.floor(+(el?.value||0)));
+  }
+  return bets;
+}
+function wheelLogTotalBet(bets){
+  return Object.values(bets).reduce((a,b)=>a+b,0);
+}
+function wheelLogNet(result,bets){
+  const total=wheelLogTotalBet(bets);
+  let net=-total;
+  const hit=+bets[result]||0;
+  if(hit>0) net += hit*(wheelLogOdds[result]+1);
+  return net;
+}
+function wheelLogAdd(result){
+  const bets=wheelLogBets();
+  const total=wheelLogTotalBet(bets);
+
+  for(const [k,v] of Object.entries(bets)){
+    if(v%100!==0) return alert(`${wheelLogNames[k]}下注金額必須是 100 的倍數`);
+    if(v>5000) return alert(`${wheelLogNames[k]}單色下注不能超過 5,000 紅利`);
+  }
+  if(total>5000) return alert("每局總下注最多 5,000 紅利");
+  if(total<=0 && !confirm("這把沒有填下注金額，仍要記錄開獎嗎？")) return;
+
+  const threshold=Math.max(0,Math.floor(+(document.getElementById("wlHeavyThreshold")?.value||1000)));
+  const rec={
+    t:Date.now(),
+    result,
+    bets,
+    total,
+    net:wheelLogNet(result,bets),
+    heavy:total>=threshold,
+    threshold
+  };
+  wheelRealLog.push(rec);
+  localStorage.setItem(WHEEL_LOG_KEY,JSON.stringify(wheelRealLog));
+  wheelLogRender();
+}
+function wheelLogUndo(){
+  if(!wheelRealLog.length)return;
+  wheelRealLog.pop();
+  localStorage.setItem(WHEEL_LOG_KEY,JSON.stringify(wheelRealLog));
+  wheelLogRender();
+}
+function wheelLogClear(){
+  if(!wheelRealLog.length)return;
+  if(!confirm(`確定清空 ${wheelRealLog.length} 筆實機紀錄？`))return;
+  wheelRealLog=[];
+  localStorage.removeItem(WHEEL_LOG_KEY);
+  wheelLogRender();
+}
+function wheelLogPct(n,d){
+  return d?`${(n/d*100).toFixed(2)}%`:"—";
+}
+function wheelLogLongestDrought(arr,keys){
+  let cur=0,max=0;
+  for(const r of arr){
+    if(keys.includes(r.result))cur=0;
+    else{cur++;if(cur>max)max=cur;}
+  }
+  return max;
+}
+function wheelLogCurrentDrought(arr,keys){
+  let n=0;
+  for(let i=arr.length-1;i>=0;i--){
+    if(keys.includes(arr[i].result))break;
+    n++;
+  }
+  return n;
+}
+function wheelLogGroupStats(arr,pred){
+  const rows=arr.filter(pred);
+  const bo=rows.filter(r=>r.result==="blue"||r.result==="orange").length;
+  return {n:rows.length,bo,rate:rows.length?bo/rows.length:0};
+}
+function wheelLogErf(x){
+  const sign=x<0?-1:1;
+  x=Math.abs(x);
+  const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  const t=1/(1+p*x);
+  const y=1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+  return sign*y;
+}
+function wheelLogPValue(a,b){
+  if(a.n<2||b.n<2)return null;
+  const pooled=(a.bo+b.bo)/(a.n+b.n);
+  const se=Math.sqrt(pooled*(1-pooled)*(1/a.n+1/b.n));
+  if(!se)return null;
+  const z=Math.abs(a.rate-b.rate)/se;
+  const cdf=0.5*(1+wheelLogErf(z/Math.sqrt(2)));
+  return Math.max(0,Math.min(1,2*(1-cdf)));
+}
+function wheelLogRender(){
+  const el=document.getElementById("wheelLogSummary");
+  const recent=document.getElementById("wheelLogRecent");
+  if(!el||!recent)return;
+
+  const a=wheelRealLog;
+  if(!a.length){
+    el.innerHTML='<div class="tiny">尚無實機紀錄。</div>';
+    recent.innerHTML="";
+    return;
+  }
+
+  const counts={red:0,yellow:0,green:0,purple:0,blue:0,orange:0};
+  let totalBet=0,totalNet=0;
+  for(const r of a){
+    counts[r.result]=(counts[r.result]||0)+1;
+    totalBet+=r.total||0;
+    totalNet+=r.net||0;
+  }
+  const boCount=counts.blue+counts.orange;
+  const betBO=wheelLogGroupStats(a,r=>(r.bets.blue||0)>0||(r.bets.orange||0)>0);
+  const noBetBO=wheelLogGroupStats(a,r=>!((r.bets.blue||0)>0||(r.bets.orange||0)>0));
+  const heavy=wheelLogGroupStats(a,r=>!!r.heavy);
+  const light=wheelLogGroupStats(a,r=>!r.heavy);
+  const pBet=wheelLogPValue(betBO,noBetBO);
+  const pHeavy=wheelLogPValue(heavy,light);
+
+  const perColor=Object.keys(counts).map(k=>{
+    const bet=wheelLogGroupStats(a,r=>(r.bets[k]||0)>0);
+    const no=wheelLogGroupStats(a,r=>!((r.bets[k]||0)>0));
+    const hitBet=bet.n?a.filter(r=>(r.bets[k]||0)>0&&r.result===k).length:0;
+    const hitNo=no.n?a.filter(r=>!((r.bets[k]||0)>0)&&r.result===k).length:0;
+    return `${wheelLogNames[k]}：有押 ${wheelLogPct(hitBet,bet.n)} (${hitBet}/${bet.n})｜沒押 ${wheelLogPct(hitNo,no.n)} (${hitNo}/${no.n})`;
+  }).join("<br>");
+
+  const sigBet=pBet!==null && pBet<0.05 ? '<b class="bad">⚠ 差異偏大</b>' : '尚未見明顯差異';
+  const sigHeavy=pHeavy!==null && pHeavy<0.05 ? '<b class="bad">⚠ 差異偏大</b>' : '尚未見明顯差異';
+
+  el.innerHTML=
+    `<div class="stat">`+
+    `<span class="label">累計 ${a.length.toLocaleString()} 把｜總下注 ${Math.round(totalBet).toLocaleString()} 紅利｜淨輸贏 <b class="${totalNet>=0?"ok":"bad"}">${totalNet>=0?"+":""}${Math.round(totalNet).toLocaleString()}</b></span>`+
+    `<div class="tiny" style="line-height:1.85;margin-top:6px">`+
+    `🔵+🟠 總開出率：<b>${wheelLogPct(boCount,a.length)}</b>（理論約 7.69%）<br>`+
+    `最長未出藍橘：<b>${wheelLogLongestDrought(a,["blue","orange"])} 把</b>｜目前連續未出：<b>${wheelLogCurrentDrought(a,["blue","orange"])} 把</b><br>`+
+    `有押藍/橘時：${wheelLogPct(betBO.bo,betBO.n)} (${betBO.bo}/${betBO.n})｜沒押藍/橘時：${wheelLogPct(noBetBO.bo,noBetBO.n)} (${noBetBO.bo}/${noBetBO.n})｜${sigBet}${pBet!==null?`（p≈${pBet.toFixed(4)}）`:""}<br>`+
+    `重注時：${wheelLogPct(heavy.bo,heavy.n)} (${heavy.bo}/${heavy.n})｜非重注：${wheelLogPct(light.bo,light.n)} (${light.bo}/${light.n})｜${sigHeavy}${pHeavy!==null?`（p≈${pHeavy.toFixed(4)}）`:""}<br><br>`+
+    `<b>各色：有押 vs 沒押的實際開出率</b><br>${perColor}<br><br>`+
+    `※ p 值只是快速比較工具；樣本少時很容易誤判，不能單獨證明遊戲有控制結果。`+
+    `</div></div>`;
+
+  const last=a.slice(-10).reverse().map((r,i)=>{
+    const dt=new Date(r.t);
+    const t=dt.toLocaleString();
+    const betText=Object.entries(r.bets).filter(([,v])=>v>0).map(([k,v])=>`${wheelLogNames[k]}${v.toLocaleString()}`).join("、")||"未下注";
+    return `<div class="tiny" style="padding:5px 0;border-bottom:1px solid rgba(255,255,255,.06)">`+
+      `${t}｜開 <b>${wheelLogNames[r.result]}</b>｜${betText}｜總押 ${r.total.toLocaleString()}｜`+
+      `<b class="${r.net>=0?"ok":"bad"}">${r.net>=0?"+":""}${Math.round(r.net).toLocaleString()}</b>`+
+      `</div>`;
+  }).join("");
+  recent.innerHTML=`<div class="stat"><span class="label">最近 10 把</span>${last}</div>`;
+}
+function wheelLogExport(){
+  if(!wheelRealLog.length)return alert("目前沒有紀錄");
+  const header=["time","result","red","yellow","green","purple","blue","orange","total_bet","net","heavy","heavy_threshold"];
+  const rows=wheelRealLog.map(r=>[
+    new Date(r.t).toISOString(),
+    wheelLogNames[r.result],
+    r.bets.red||0,r.bets.yellow||0,r.bets.green||0,r.bets.purple||0,r.bets.blue||0,r.bets.orange||0,
+    r.total||0,r.net||0,r.heavy?1:0,r.threshold||0
+  ]);
+  const csv=[header,...rows].map(row=>row.map(v=>`"${String(v).replaceAll('"','""')}"`).join(",")).join("\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download=`starro_wheel_log_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+window.addEventListener("DOMContentLoaded",wheelLogRender);
+
+</script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import {
+  getFirestore, collection, addDoc, query, orderBy, limit,
+  onSnapshot, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDSHPDv4u7-mMhbuUzzMSDGxljAWTNLJys",
+  authDomain: "starro-16e01.firebaseapp.com",
+  projectId: "starro-16e01",
+  storageBucket: "starro-16e01.firebasestorage.app",
+  messagingSenderId: "900308579725",
+  appId: "1:900308579725:web:0df09367c95ac826b779c4",
+  measurementId: "G-ZTM1PL8L8B"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let displayName = localStorage.getItem("starro_display_name") || "";
+
+function esc(s){
+  return String(s ?? "").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+function askName(force=false){
+  if(!force && displayName) return displayName;
+  let n = prompt("請輸入你在全服戰報顯示的暱稱：", displayName || "");
+  if(n !== null){
+    n = n.trim().slice(0,20);
+    if(n){
+      displayName = n;
+      localStorage.setItem("starro_display_name", n);
+    }
+  }
+  updateNameUI();
+  return displayName;
+}
+
+function updateNameUI(){
+  const e=document.getElementById("fbNameLabel");
+  if(e)e.textContent=displayName || "設定暱稱";
+}
+
+window.changeStarroName = ()=>askName(true);
+
+window.starroBroadcast = async (type,result,detail="")=>{
+  try{
+    if(!currentUser) return;
+    if(!displayName && !askName()) return;
+    await addDoc(collection(db,"jackpots"),{
+      uid: currentUser.uid,
+      name: displayName,
+      type: String(type).slice(0,40),
+      result: String(result).slice(0,80),
+      detail: String(detail).slice(0,160),
+      createdAt: serverTimestamp()
+    });
+  }catch(err){
+    console.error("戰報送出失敗",err);
+  }
+};
+
+function starroFeedText(v){
+  return String(v ?? "").replaceAll("賽高🎉","最頂").replaceAll("賽高","最頂");
+}
+function starroFeedHtml(v){
+  const safe=esc(starroFeedText(v));
+  return safe
+    .replaceAll("頂級（0.36%）",'<span class="tier-top-red">頂級（0.36%）</span>')
+    .replaceAll("頂級 0.36%",'<span class="tier-top-red">頂級 0.36%</span>')
+    .replaceAll("頂級（0.36％）",'<span class="tier-top-red">頂級（0.36％）</span>');
+}
+
+function renderFeed(rows){
+  const ticker=document.getElementById("jackpotTicker");
+  const feed=document.getElementById("jackpotFeed");
+  if(!ticker||!feed)return;
+  if(!rows.length){
+    ticker.textContent="尚無大獎紀錄";
+    feed.innerHTML="";
+    return;
+  }
+  const top=rows[0];
+  ticker.innerHTML=`🔥 ${esc(top.name)}｜${starroFeedHtml(top.type)}｜${starroFeedHtml(top.result)}`;
+  feed.innerHTML=rows.map(x=>{
+    let time="";
+    if(x.createdAt?.toDate){
+      time=x.createdAt.toDate().toLocaleTimeString("zh-TW",{hour:"2-digit",minute:"2-digit"});
+    }
+    return `<div class="stat" style="margin-top:6px;padding:8px 10px">
+      <div><b>${esc(x.name)}</b>｜${starroFeedHtml(x.type)}｜<b>${starroFeedHtml(x.result)}</b></div>
+      <div class="tiny">${time}${x.detail?`｜${starroFeedHtml(x.detail)}`:""}</div>
+    </div>`;
+  }).join("");
+}
+
+
+function taipeiDateKey(){
+  return new Intl.DateTimeFormat("en-CA",{
+    timeZone:"Asia/Taipei",year:"numeric",month:"2-digit",day:"2-digit"
+  }).format(new Date());
+}
+
+async function registerDailyPageView(){
+  const el=document.getElementById("dailyPageViewCount");
+  try{
+    const dateKey=taipeiDateKey();
+    const namespace="starro-simulator-v777";
+    const key=`pageviews-${dateKey}`;
+    const url=`https://abacus.jasoncameron.dev/hit/${encodeURIComponent(namespace)}/${encodeURIComponent(key)}`;
+    const response=await fetch(url,{cache:"no-store"});
+    if(!response.ok) throw new Error(`HTTP ${response.status}`);
+    const data=await response.json();
+    const value=Number(data?.value ?? 0);
+    if(!Number.isFinite(value)) throw new Error("invalid counter response");
+    if(el) el.textContent=`👁 今日瀏覽：${value.toLocaleString()} 次`;
+  }catch(err){
+    console.error("每日 Page View 統計失敗",err);
+    if(el) el.textContent="👁 今日瀏覽：讀取失敗";
+  }
+}
+
+registerDailyPageView();
+
+signInAnonymously(auth).catch(err=>{
+  console.error(err);
+  const e=document.getElementById("fbStatus");
+  if(e)e.textContent="❌ 登入失敗";
+});
+
+onAuthStateChanged(auth,user=>{
+  currentUser=user;
+  const e=document.getElementById("fbStatus");
+  if(e)e.textContent=user?"🟢 已連線":"🔴 未連線";
+  updateNameUI();
+  if(user){
+    if(!displayName) setTimeout(()=>askName(),250);
+  }
+});
+
+const q=query(collection(db,"jackpots"),orderBy("createdAt","desc"),limit(200));
+onSnapshot(q,snap=>{
+  const sevenDaysAgo = Date.now() - 7*24*60*60*1000;
+  const rows=snap.docs
+    .map(d=>({id:d.id,...d.data()}))
+    .filter(x=>{
+      if(!x.createdAt?.toDate) return true;
+      return x.createdAt.toDate().getTime() >= sevenDaysAgo;
+    });
+  renderFeed(rows);
+},err=>{
+  console.error("戰報讀取失敗",err);
+  const e=document.getElementById("fbStatus");
+  if(e)e.textContent="⚠️ 戰報讀取失敗";
+});
+</script>
+<script>
+function calcDropRate(){
+  const cardBasePercent = Number(document.getElementById("dropCardRate")?.value || 0);
+  const equipPercent = Number(document.getElementById("dropEquipRate")?.value || 0);
+
+  const useDream = !!document.getElementById("dropUseDream")?.checked;
+  const useDaidai = !!document.getElementById("dropUseDaidai")?.checked;
+  const useCandy = !!document.getElementById("dropUseCandy")?.checked;
+  const useEvil = !!document.getElementById("dropUseEvil")?.checked;
+
+  const cardBuiltInPercent = 100;
+  const cardPercent = cardBuiltInPercent + cardBasePercent + (useEvil ? 200 : 0);
+
+  const cardRate = cardPercent / 100;
+  const equipRate = equipPercent / 100;
+
+  const baseDrop = 1;
+  const serverRate = 1;
+  const infiniteDreamBonus = useDream ? 2 : 0; // 幻境勾選時 +200%
+  const daidai = useDaidai ? 1 : 0;
+  const candy = useCandy ? 2 : 0;
+
+  const firstPart = baseDrop * (1 + infiniteDreamBonus) * cardRate;
+  const secondPart = serverRate + daidai + equipRate + candy;
+  const finalRate = firstPart * secondPart;
+
+  const result = document.getElementById("dropRateResult");
+  const detail = document.getElementById("dropRateDetail");
+  if(!result || !detail) return;
+
+  const finalRate01 = finalRate / 10;
+
+  result.innerHTML =
+    `<div class="stat"><span class="label"><span style="color:#ff5f6d;font-weight:800">1%</span> 道具<span style="color:#f7c65c;font-weight:800">(普卡)</span>最終掉落率</span><b class="ok">${finalRate.toFixed(2)}%</b></div>` +
+    `<div class="stat"><span class="label"><span style="color:#ff5f6d;font-weight:800">0.1%</span>道具<span style="color:#f7c65c;font-weight:800">(王卡)</span>最終掉落率</span><b class="ok">${finalRate01.toFixed(2)}%</b></div>` +
+    `<div class="stat"><span class="label">實際卡片掉落率（含基礎100%）</span><b>${cardPercent.toFixed(0)}%</b></div>` +
+    `<div class="stat"><span class="label">後段倍率</span><b>${secondPart.toFixed(2)}</b></div>`;
+
+  detail.innerHTML =
+    `<div class="stat"><span class="label">實際代入</span>` +
+    `<div class="tiny" style="line-height:1.9;margin-top:6px">` +
+    `卡片掉落率：基礎 100% + ${cardBasePercent}%` +
+    `${useEvil ? ` + 惡波 200%` : ""}` +
+    ` = ${cardPercent}%<br>` +
+    `幻境：${useDream ? "使用 +200%掉落率" : "未使用"}｜基礎掉落率：${equipPercent}%｜呆呆：${useDaidai ? "掉落率 +100%" : "未使用"}｜超黏：${useCandy ? "使用 +200%掉落率" : "未使用"}<br>` +
+    `(1 × (1 + ${infiniteDreamBonus}) × ${cardRate.toFixed(2)}) × ` +
+    `(${serverRate} + ${daidai} + ${equipRate.toFixed(2)} + ${candy})` +
+    `<br>= <b class="ok">${finalRate.toFixed(2)}%</b>` +
+    `</div></div>`;
+}
+
+
+function calcBossCardRate(){
+  const baseDrop = Number(document.getElementById("bossBaseDrop")?.value || 0);
+  const infiniteDream = 1;
+  const cardPercent = Number(document.getElementById("bossCardRate")?.value || 0);
+  const equipPercent = Number(document.getElementById("bossEquipRate")?.value || 0);
+
+  const cardRate = cardPercent / 100;
+  const equipRate = equipPercent / 100;
+
+  const serverRate = 1;
+  const daidai = 1;
+  const candy = 2;
+
+  const firstPart = baseDrop * (1 + infiniteDream) * cardRate;
+  const secondPart = serverRate + daidai + equipRate + candy;
+  const finalRate = firstPart * secondPart;
+
+  const result = document.getElementById("bossCardResult");
+  const detail = document.getElementById("bossCardDetail");
+  if(!result || !detail) return;
+
+  result.innerHTML =
+    `<div class="stat"><span class="label">波士王卡最終掉卡率</span><b class="ok">${finalRate.toFixed(4)}%</b></div>`+
+    `<div class="stat"><span class="label">前段倍率</span><b>${firstPart.toFixed(6)}</b></div>`+
+    `<div class="stat"><span class="label">後段倍率</span><b>${secondPart.toFixed(4)}</b></div>`;
+
+  detail.innerHTML =
+    `<div class="stat"><span class="label">實際代入</span>`+
+    `<div class="tiny" style="line-height:1.9;margin-top:6px">`+
+    `基礎掉卡率 ${baseDrop}%｜幻境 ${infiniteDream}（內建）｜卡片掉落率 ${cardPercent}% = ${cardRate.toFixed(2)}｜掉落率 ${equipPercent}% = ${equipRate.toFixed(2)}<br>`+
+    `(${baseDrop} × (1 + ${infiniteDream}) × ${cardRate.toFixed(2)}) × `+
+    `(${serverRate} + ${daidai} + ${equipRate.toFixed(2)} + ${candy})`+
+    `<br>= ${firstPart.toFixed(6)} × ${secondPart.toFixed(4)}`+
+    `<br>= <b class="ok">${finalRate.toFixed(4)}%</b>`+
+    `</div></div>`;
+}
+
+document.addEventListener("DOMContentLoaded", ()=>{
+  calcDropRate();
+  ["dropUseDream","dropUseDaidai","dropUseCandy","dropUseEvil"].forEach(id=>{
+    document.getElementById(id)?.addEventListener("change", calcDropRate);
+  });
+});
+
+</script>
+<script>
+
+const decomposeState = {runs:0,totalKills:0,totalCards:0,totalBreaks:0,totalRunes:0};
+
+function binomialSample(n,p){
+  let hit=0;
+  for(let i=0;i<n;i++) if(Math.random()<p) hit++;
+  return hit;
+}
+
+function simulateDecomposeMinutes(minutes){
+  const killsPer10Min = Math.max(0, Number(document.getElementById("decomposeRange")?.value || 0));
+  const dropRate = Math.max(0, Number(document.getElementById("decomposeDropRate")?.value || 0)) / 100;
+
+  const multiplier = minutes / 10;
+  const batchKills = Math.round(killsPer10Min * multiplier);
+  const batchCards = binomialSample(batchKills, Math.min(dropRate,1));
+  const batchBreaks = Math.floor(batchCards / 30);
+  const batchRunes = Math.ceil(batchBreaks * 0.25);
+
+  decomposeState.runs += 1;
+  decomposeState.totalKills += batchKills;
+  decomposeState.totalCards += batchCards;
+  decomposeState.totalBreaks += batchBreaks;
+  decomposeState.totalRunes += batchRunes;
+
+  const now = document.getElementById("decomposeNow");
+  const stats = document.getElementById("decomposeStats");
+
+  const expectedCards = batchKills * dropRate;
+  const expectedBreaks = Math.floor(expectedCards / 30);
+  const expectedRunes = Math.ceil(expectedBreaks * 0.25);
+
+  const timeLabel = minutes === 60 ? "1 小時" : `${minutes} 分鐘`;
+
+  now.innerHTML =
+    `<div class="stat"><span class="label">${timeLabel}殺怪</span><b>${batchKills.toLocaleString()} 隻</b></div>`+
+    `<div class="stat"><span class="label">${timeLabel}掉卡</span><b class="ok">${batchCards.toLocaleString()} 張</b></div>`+
+    `<div class="stat"><span class="label">可分解次數</span><b>${batchBreaks.toLocaleString()} 次</b></div>`+
+    `<div class="stat"><span class="label">獲得</span><b style="color:#4da3ff">${batchRunes.toLocaleString()} 個完整符文</b></div>`;
+
+  stats.innerHTML =
+    `<div class="stat"><span class="label">${timeLabel}理論期望值</span>`+
+    `<div class="tiny" style="line-height:1.9;margin-top:6px">`+
+    `掉落率：${(dropRate*100).toFixed(2)}%<br>`+
+    `預期卡片：${expectedCards.toFixed(1)} 張<br>`+
+    `預期可分解：約 ${expectedBreaks.toLocaleString()} 次<br>`+
+    `預期完整符文：<span style="color:#4da3ff;font-weight:800">${expectedRunes.toLocaleString()} 個完整符文</span>`+
+    `</div></div>`+
+    `<div class="stat" style="margin-top:10px"><span class="label">累計模擬</span>`+
+    `<div class="tiny" style="line-height:1.9;margin-top:6px">`+
+    `累計 ${decomposeState.runs.toLocaleString()} 次｜殺怪 ${decomposeState.totalKills.toLocaleString()}｜卡片 ${decomposeState.totalCards.toLocaleString()}｜分解 ${decomposeState.totalBreaks.toLocaleString()}｜完整符文 <span style="color:#4da3ff;font-weight:800">${Math.ceil(decomposeState.totalRunes).toLocaleString()} 個</span>`+
+    `</div></div>`;
+}
+
+function calcManualRunes(){
+  const cards = Math.max(0, Math.floor(Number(document.getElementById("manualRuneCards")?.value || 0)));
+  const breaks = Math.floor(cards / 30);
+  const runes = Math.ceil(breaks * 0.25);
+
+  const result = document.getElementById("manualRuneResult");
+  const detail = document.getElementById("manualRuneDetail");
+
+  result.innerHTML =
+    `<div class="stat"><span class="label">輸入卡片</span><b>${cards.toLocaleString()} 張</b></div>`+
+    `<div class="stat"><span class="label">可分解次數</span><b>${breaks.toLocaleString()} 次</b></div>`+
+    `<div class="stat"><span class="label">期望值</span><b style="color:#4da3ff">${runes.toLocaleString()} 個完整符文</b></div>`;
+
+  detail.innerHTML =
+    `<div class="stat"><span class="label">試算說明</span>`+
+    `<div class="tiny" style="line-height:1.9;margin-top:6px">`+
+    `每 30 張卡片可分解 1 次<br>`+
+    `分解次數：${cards.toLocaleString()} ÷ 30 = ${breaks.toLocaleString()} 次<br>`+
+    `完整符文期望值：${breaks.toLocaleString()} × 25% = <span style="color:#4da3ff;font-weight:800">${runes.toLocaleString()} 個完整符文</span>`+
+    `</div></div>`;
+}
+
+function resetDecompose(){
+  decomposeState.runs=0;
+  decomposeState.totalKills=0;
+  decomposeState.totalCards=0;
+  decomposeState.totalBreaks=0;
+  decomposeState.totalRunes=0;
+  const now=document.getElementById("decomposeNow");
+  const stats=document.getElementById("decomposeStats");
+  if(now) now.innerHTML="";
+  if(stats) stats.innerHTML="";
+}
+
+calcManualRunes();
+
+</script>
+</body></html>
