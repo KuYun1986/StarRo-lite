@@ -1092,7 +1092,7 @@ function refineBoxOpen(n){
 
   document.getElementById("refineBoxNow").innerHTML=
     `<div class="stat"><span class="label">本次開啟 ${n.toLocaleString()} 箱</span>`+
-    `<div class="tiny" style="line-height:1.9;margin-top:6px">花費 ${(n*REFINE_BOX_COST).toLocaleString()} P<br>${rows}</div></div>`;
+    `<div class="tiny" style="line-height:1.9;margin-top:6px">${rows}</div></div>`;
 
   refineBoxRender();
 }
@@ -1100,9 +1100,7 @@ function refineBoxOpen(n){
 function refineBoxRender(){
   const s=refineBoxState;
   document.getElementById("refineBoxStats").innerHTML=
-    card("每抽費用",REFINE_BOX_COST.toLocaleString()+" P")+
-    card("累計開箱",s.total.toLocaleString())+
-    card("累計花費",(s.total*REFINE_BOX_COST).toLocaleString()+" P");
+    card("累計開箱",s.total.toLocaleString());
 
   document.getElementById("refineBoxDist").innerHTML=
     `<div class="stat"><span class="label">累計獲得</span>`+
@@ -2276,7 +2274,7 @@ renderSteps();
 
     el("refine30Now").innerHTML =
       `<div class="stat">
-        <b>本次消耗 ${used.toLocaleString()} 把精煉槌｜花費 ${(used*HAMMER_COST).toLocaleString()} P｜+${startLevel} → +${state.level}</b>
+        <b>本次消耗 ${used.toLocaleString()} 把精煉槌｜+${startLevel} → +${state.level}</b>
         <div class="tiny" style="line-height:1.8;margin-top:6px">
           ${state.level>=30 ? "🎉 本次已敲到 +30<br>" : ""}
           ${rows.join("<br>")}
@@ -2324,7 +2322,7 @@ renderSteps();
 
     el("refine30Now").innerHTML =
       `<div class="stat">
-        <b>+${startLevel} → +30｜本次消耗 ${used.toLocaleString()} 把精煉槌｜花費 ${(used*HAMMER_COST).toLocaleString()} P</b>
+        <b>+${startLevel} → +30｜本次消耗 ${used.toLocaleString()} 把精煉槌</b>
         <div class="tiny" style="line-height:1.8;margin-top:6px">${rows.join("<br>")}</div>
       </div>`;
     renderStats();
