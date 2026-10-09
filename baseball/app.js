@@ -35,8 +35,8 @@ function tick(t){
  if(!playing)return;
  const p=Math.min(1,(t-pitchStart)/pitch.duration);
  swingPosition=p;
- const ready=Math.abs(p-.5)<=.20;
- const tier=Math.abs(p-.5)<=.025?'hr':Math.abs(p-.5)<=.065?'triple':Math.abs(p-.5)<=.12?'double':Math.abs(p-.5)<=.20?'single':'miss';
+ const ready=Math.abs(p-.5)<=.30;
+ const tier=Math.abs(p-.5)<=.05?'hr':Math.abs(p-.5)<=.125?'triple':Math.abs(p-.5)<=.20?'double':Math.abs(p-.5)<=.30?'single':'miss';
  const zone=$('strikeZone');zone.classList.remove('tier-hr','tier-triple','tier-double','tier-single','tier-miss');zone.classList.add('tier-'+tier);
  $('strikeZone').classList.toggle('ready',ready);
  $('swingCue').classList.toggle('ready',ready);
