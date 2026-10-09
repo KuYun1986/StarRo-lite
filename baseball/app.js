@@ -1,7 +1,7 @@
 const cfg=window.BASEBALL_CONFIG,$=id=>document.getElementById(id);
 const API='https://dakobubi-survival-backend-production.up.railway.app',KEY='dakobubi_survival_session';
 const pitchers=['古雲','一生','豪耶','石董','森上','挪威','光波','阿卷'];
-let isAdmin=false,adminChecked=false;let token=sessionStorage.getItem(KEY)||'',mine={points:0,hr:0,hits:0,ab:0},used=0,playing=false,lock=false,pitch=null,pitchStart=0,raf=0,day=0;
+let countdownActive=false;let isAdmin=false,adminChecked=false;let token=sessionStorage.getItem(KEY)||'',mine={points:0,hr:0,hits:0,ab:0},used=0,playing=false,lock=false,pitch=null,pitchStart=0,raf=0,day=0;
 const start=cfg.eventStart,days=cfg.eventDays||7,limit=cfg.dailyAttempts||10;
 const end=new Date(Date.parse(start+'T00:00:00Z')+(days-1)*86400000).toISOString().slice(0,10);
 const safe=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -17,7 +17,7 @@ function render(){
  $('day').textContent=day<1?'尚未開始':day>days?'已結束':'第 '+day+' / '+days+' 天';
  $('remaining').textContent=Math.max(0,limit-used)+' / '+limit;
  for(const [id,key] of [['myPoints','points'],['myHR','hr'],['myHits','hits'],['myAB','ab']])$(id).textContent=mine[key]||0;
- $('startBtn').disabled=!token||playing||lock||day<1||day>days||used>=limit;
+ $('startBtn').disabled=!token||playing||lock||countdownActive||day<1||day>days||used>=limit;
  $('swingBtn').disabled=!playing||lock;
  $('baseballAdmin').hidden=!isAdmin;
  $('mode').textContent=token?'🟢 Discord 已登入':'🔐 尚未登入';
@@ -37,17 +37,28 @@ function tick(t){
  if(p>=1){swing(true);return}raf=requestAnimationFrame(tick);
 }
 async function startPitch(){
- if(!token||playing||lock||used>=limit)return;
- lock=true;render();message('投手準備中…');
+ if(!token||playing||lock||countdownActive||used>=limit)return;
+ lock=true;render();message('正在抽選本次投手…');
  try{
   pitch=await api('/baseball/pitch','POST');
-  $('status').textContent='⚾ '+pitch.pitcher+' 投球中';
+  $('currentPitcher').textContent=pitch.pitcher;
+  $('pitchSpeed').textContent=(pitch.duration/1000).toFixed(2)+' 秒';
+  $('status').textContent='⚾ '+pitch.pitcher+' 準備投球';
   $('pitchNum').textContent='第 '+(used+1)+' 球｜'+pitch.pitcher;
   $('resultFlash').textContent='';
+  countdownActive=true;render();
+  const cd=$('countdown');cd.hidden=false;
+  for(let n=3;n>=1;n--){
+   cd.textContent=n;
+   message('本次投手：'+pitch.pitcher+'｜'+n+' 秒後投球，準備按揮棒！');
+   await new Promise(resolve=>setTimeout(resolve,1000));
+  }
+  cd.hidden=true;countdownActive=false;
   playing=true;lock=false;render();
-  message('本球投手：'+pitch.pitcher+'｜球速隨機，抓準時機揮棒！');
+  $('status').textContent='⚾ '+pitch.pitcher+' 投球中！';
+  message('球速每球不同！白色移動指針對準中央固定白線時揮棒！');
   pitchStart=performance.now();raf=requestAnimationFrame(tick);
- }catch(e){lock=false;message(e.message+'（若上一球未完成，請稍後再試）');render()}
+ }catch(e){countdownActive=false;$('countdown').hidden=true;lock=false;message(e.message+'（若上一球未完成，請稍後再試）');render()}
 }
 async function swing(auto=false){
  if(!playing||lock)return;
