@@ -20,11 +20,10 @@ function render(){
  $('startBtn').disabled=!token||playing||lock||day<1||day>days||used>=limit;
  $('swingBtn').disabled=!playing||lock;
  $('baseballAdmin').hidden=!isAdmin;
- if(token&&adminChecked&&!isAdmin)$('identityHelp').textContent='已登入 Discord，但此帳號未列入 Railway 的 ADMIN_DISCORD_IDS 管理員名單。';
  $('mode').textContent=token?'🟢 Discord 已登入':'🔐 尚未登入';
  $('discordLogin').textContent=token?'✓ Discord 已登入':'🎮 Discord 登入';
  $('discordLogin').disabled=!!token;
- $('identityHelp').textContent=token?'使用 Discord 帳號記錄成績，跨裝置同步。':'請先登入 Discord 才能計分。';
+ $('identityHelp').textContent=!token?'請先登入 Discord 才能計分。':!adminChecked?'正在確認管理員權限…':isAdmin?'管理員身分已驗證，可以使用下方棒球管理系統。':'使用 Discord 帳號記錄成績，跨裝置同步。';
  $('nickname').readOnly=true;
  $('saveName').textContent=token?'已連結 Discord':'Discord 登入';
  $('boardNote').textContent='Railway 即時排行榜 · 最多 30 名 · 依總分、全壘打、安打排序';
@@ -67,7 +66,15 @@ async function swing(auto=false){
 }
 async function refresh(){
  if(!token){render();return}
- try{const d=await api('/baseball/state');mine=d.me;used=d.used;day=d.day;isAdmin=!!d.admin;adminChecked=true;ranking(d.ranking);render()}catch(e){message(e.message);if(/登入|過期/.test(e.message)){token='';sessionStorage.removeItem(KEY);render()}}
+ try{
+ const d=await api('/baseball/state');
+ mine=d.me;used=d.used;day=d.day;ranking(d.ranking);
+ // Use the same admin identity source as the survival control panel.
+ // This also works if Railway is serving an older baseball/state response.
+ try{const survival=await api('/state');isAdmin=!!survival.me?.admin}
+ catch(e){isAdmin=!!d.admin}
+ adminChecked=true;render()
+}catch(e){message(e.message);if(/登入|過期/.test(e.message)){token='';sessionStorage.removeItem(KEY);render()}}
 }
 $('startBtn').addEventListener('click',startPitch);
 $('swingBtn').addEventListener('click',()=>swing());
