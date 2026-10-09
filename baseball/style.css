@@ -239,3 +239,21 @@
 .ballpark.anime-stage .result-flash.result-single{color:#ffe37b!important;text-shadow:0 3px 5px #362100,0 0 20px #ffd34b!important}
 .ballpark.anime-stage .result-flash.result-miss{color:#e8ecf4!important}
 @media(max-width:650px){.hit-legend{gap:5px}.hit-key{font-size:11px;padding:5px 7px}.hit-legend-label{width:100%;text-align:center}}
+
+/* v20261009m — register interactive flash to the strike box printed in the 1492x690 artwork.
+   The image's actual box spans approximately x=44.6–55.8%, y=56.2–83.7%. */
+.ballpark.anime-stage .strike-zone,
+.ballpark.anime-stage .strike-zone.ready,
+.ballpark.anime-stage .strike-zone.tier-hr.ready,
+.ballpark.anime-stage .strike-zone.tier-triple.ready,
+.ballpark.anime-stage .strike-zone.tier-double.ready,
+.ballpark.anime-stage .strike-zone.tier-single.ready{
+ left:50.2%!important;top:56.2%!important;
+ width:11.2%!important;height:27.5%!important;
+ transform:translateX(-50%)!important;
+ box-sizing:border-box!important;
+ border-radius:2px!important;
+}
+@media(max-width:650px){
+ .ballpark.anime-stage .strike-zone{left:50.2%!important;top:56.2%!important;width:11.2%!important;height:27.5%!important}
+}
