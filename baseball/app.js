@@ -6,6 +6,7 @@ const start=cfg.eventStart,days=cfg.eventDays||7,limit=cfg.dailyAttempts||10;
 const end=new Date(Date.parse(start+'T00:00:00Z')+(days-1)*86400000).toISOString().slice(0,10);
 const safe=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function message(s){$('playMsg').textContent=s}
+function discordLogin(){location.href=API+'/auth/login?baseball=true'}
 async function api(path,method='GET',body){
  const r=await fetch(API+path,{method,headers:{Authorization:'Bearer '+token,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'});
  const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.detail||'連線失敗');return d;
@@ -19,7 +20,9 @@ function render(){
  $('startBtn').disabled=!token||playing||lock||day<1||day>days||used>=limit;
  $('swingBtn').disabled=!playing||lock;
  $('baseballAdmin').hidden=!isAdmin;
- $('mode').textContent=token?'🟢 Discord 排行榜':'🔐 請登入 Discord';
+ $('mode').textContent=token?'🟢 Discord 已登入':'🔐 尚未登入';
+ $('discordLogin').textContent=token?'✓ Discord 已登入':'🎮 Discord 登入';
+ $('discordLogin').disabled=!!token;
  $('identityHelp').textContent=token?'使用 Discord 帳號記錄成績，跨裝置同步。':'請先登入 Discord 才能計分。';
  $('nickname').readOnly=true;
  $('saveName').textContent=token?'已連結 Discord':'Discord 登入';
@@ -77,7 +80,8 @@ $('resetBaseball').addEventListener('click',async()=>{
  catch(e){$('adminMsg').textContent='操作失敗：'+e.message}
  finally{btn.disabled=false}
 });
-$('saveName').addEventListener('click',()=>{if(!token)location.href=API+'/auth/login?baseball=true'});
+$('saveName').addEventListener('click',()=>{if(!token)discordLogin()});
+$('discordLogin').addEventListener('click',discordLogin);
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&!['INPUT','TEXTAREA','BUTTON'].includes(document.activeElement?.tagName)){e.preventDefault();if(playing)swing()}});
 $('shareBtn').addEventListener('click',async()=>{const txt='⚾ 7天棒球挑戰賽\n🏆 '+mine.points+' 分\n💥 全壘打 '+mine.hr+' 支\n🏃 安打 '+mine.hits+' 支\n'+location.href.split('#')[0];try{await navigator.clipboard.writeText(txt);message('成績已複製，可以貼到 Discord！')}catch{message('複製失敗')}});
 async function init(){
@@ -88,6 +92,6 @@ async function init(){
  $('nickname').placeholder='Discord 帳號登入後自動識別';
  $('nickname').value=token?'已登入 Discord':'尚未登入';
  render();await refresh();
- if(!token)message('請按「Discord 登入」，才能開始棒球挑戰並參加排行榜。');
+ if(!token)message('直接按上方「Discord 登入」即可參賽，不用先進入極限生存戰。');
 }
 init();
