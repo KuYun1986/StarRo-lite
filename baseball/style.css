@@ -98,3 +98,31 @@
  .ballpark.cinematic .strike-zone{left:70%;top:55%;width:74px;height:82px}
  .ballpark.cinematic .illustrated-batter.swing{animation:cinematicSwing .38s ease-out}
 }
+
+/* Broadcast baseball game UI — reference-inspired, all controls remain live */
+.shell{max-width:1480px}
+.layout{grid-template-columns:minmax(0,2.05fr) minmax(280px,.85fr)}
+.ballpark.broadcast{height:570px;background-position:center center;border:2px solid #65bcff;border-radius:14px;box-shadow:0 0 0 3px #082f5b,0 12px 36px #010d1d}
+.ballpark.broadcast .stadium-title{top:15px;left:16px;font-size:20px;letter-spacing:2px;display:flex;flex-direction:column;align-items:flex-start;gap:3px;padding:12px 20px;background:linear-gradient(125deg,#113a6b,#071c38e8);border:1px solid #65c9ff;box-shadow:0 3px 16px #031b38a8}
+.ballpark.broadcast .stadium-title small{font-size:9px;letter-spacing:3px}
+.ballpark.broadcast .field-score{position:absolute;z-index:13;top:15px;right:16px;display:flex;gap:0;border:1px solid #4ca4f7;border-radius:9px;background:#071a35e8;box-shadow:0 4px 14px #07152ba8}
+.field-score>div{padding:10px 15px;min-width:65px;text-align:center;border-right:1px solid #4d729f77}.field-score>div:last-child{border:0}.field-score small{display:block;color:#c5d9f4;font-size:11px}.field-score b{display:block;font-size:25px;color:#ffcc54}
+.ballpark.broadcast .field-counter,.ballpark.broadcast .field-next{position:absolute;bottom:15px;z-index:13;background:#09274be9;border:1px solid #4aa4ef;padding:11px 15px;border-radius:10px;color:#d6e8ff;font-size:12px;box-shadow:0 5px 13px #091a34a8}
+.ballpark.broadcast .field-counter{left:15px}.ballpark.broadcast .field-next{right:15px}
+.ballpark.broadcast .field-counter strong,.ballpark.broadcast .field-next strong{display:block;font-size:19px;color:#fff}
+.ballpark.broadcast .illustrated-batter{width:285px;height:435px;left:1%;bottom:0;z-index:9}
+.ballpark.broadcast .illustrated-pitcher{width:63px;height:96px;left:50%;top:47%;z-index:6}
+.ballpark.broadcast .strike-zone{left:55%;top:61%;width:120px;height:150px;z-index:10;border:3px solid #a1dbff;box-shadow:0 0 22px #62c7ff,inset 0 0 20px #6ac8ff44;background:#78bfff12}
+.ballpark.broadcast .strike-zone span{bottom:-30px}
+.ballpark.broadcast .ball{z-index:12}
+.ballpark.broadcast .result-flash{top:29%;left:38%;font-size:clamp(25px,3.5vw,40px);z-index:14}
+.ballpark.broadcast .countdown{z-index:15}
+.pitcher-banner{background:linear-gradient(100deg,#1b436b,#0b1c36);border-color:#4c9be5}
+.pitcher-banner strong{color:#ffcc59}
+.stadium .controls{gap:14px}.stadium .controls button{font-size:21px;min-height:70px;border-radius:13px;font-weight:900}
+.stadium .controls .primary{background:linear-gradient(#ffdb75,#f1ac28);color:#152239}
+.stadium .controls .hit{background:linear-gradient(#d86670,#923442);color:white}
+.swing-cue{background:#082747;border-color:#357cbd;font-size:17px}
+.swing-cue.ready{background:#16734c;border-color:#8dffc3}
+@media(max-width:1100px){.layout{grid-template-columns:minmax(0,1fr)}.ballpark.broadcast{height:510px}}
+@media(max-width:650px){.ballpark.broadcast{height:370px}.ballpark.broadcast .illustrated-batter{width:165px;height:250px;left:0}.ballpark.broadcast .illustrated-pitcher{width:42px;height:67px;top:47%}.ballpark.broadcast .strike-zone{left:60%;top:58%;width:77px;height:94px}.ballpark.broadcast .stadium-title{font-size:12px;padding:8px}.ballpark.broadcast .stadium-title small{font-size:7px}.ballpark.broadcast .field-score{top:10px;right:8px}.field-score>div{padding:6px;min-width:42px}.field-score small{font-size:9px}.field-score b{font-size:16px}.ballpark.broadcast .field-counter,.ballpark.broadcast .field-next{padding:6px 8px;font-size:9px;bottom:8px}.ballpark.broadcast .field-counter strong,.ballpark.broadcast .field-next strong{font-size:12px}.stadium .controls button{font-size:16px;min-height:60px}}
