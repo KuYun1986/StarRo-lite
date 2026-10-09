@@ -16,7 +16,7 @@
 // 上傳 GitHub 前，將此網址換成你的 Railway 公開 HTTPS 網址（不要加最後的 /）。
 const API_BASE='https://dakobubi-survival-backend-production.up.railway.app';
 const TOKEN_KEY='dakobubi_survival_session';
-const ACTIONS=[['A','🛡️','防守','今晚先守住據點。生命值 +5、護盾 +15；遭攻擊傷害減半，並阻止掠奪。'],['B','📦','搜尋','外出冒險尋找補給。物資 +15，但不會獲得額外防護。'],['C','⚔️','攻擊','主動出擊指定對手。消耗 5 物資，造成基礎 25 傷害；對方防守時傷害減半。'],['D','💰','掠奪','趁亂奪取對手資源。消耗 3 物資，最多搶得 15 物資；目標防守則失敗。'],['E','❤️','治療','養傷準備下一場戰鬥。消耗 10 物資，恢復 30 HP（最高 100）。'],['F','🤝','結盟','尋找可靠盟友。必須雙方當天互選才成立；成功後雙方獲得護盾與積分。']];
+const ACTIONS=[['A','🛡️','防守','今晚先保小命，你行NISSAN。 加固據點，生命值＋5、護盾＋15，受到攻擊傷害減半，並阻止掠奪。'],['B','📦','搜尋','冒險出去找物資。 深入廢墟搜尋補給，獲得15物資，但沒有額外防禦。'],['C','⚔️','攻擊','先下手為強。 消耗5物資，對指定玩家發動攻擊，基礎傷害25。'],['D','💰','掠奪','你的就是我的，我的還是我的！ 消耗3物資，最多搶走對方15物資；對方防守則失敗。'],['E','❤️','治療','活著才能走到最後。 消耗10物資，恢復30生命值，最高100。'],['F','🤝','結盟','合作求生，還是伺機背叛？ 雙方互選才能成功結盟，獲得護盾與積分加成。']];
 let token=sessionStorage.getItem(TOKEN_KEY)||'',snapshot=null,choice='',target='';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -45,7 +45,7 @@ function render(){
  $('target').disabled=!enabled||!needs;$('target').value=targets.some(x=>x.id===target)?target:'';
  $('submit').disabled=!enabled;$('join').disabled=!me||!!p||g?.status!=='running'||g.day!==1||new Date(g.deadline)<=new Date();
  $('chosen').textContent=submitted?`今日已提交：${ACTIONS.find(x=>x[0]===submitted.kind)?.[2]||''}（截止前可更改）`:'尚未提交今日行動';
- $('ranking').innerHTML=(d.ranking||[]).map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.name)}${x.alive?'':' 💀'}</td><td>${x.score} <span class="muted">(積分 ${x.points})</span></td></tr>`).join('')||'<tr><td colspan="3">尚無參賽者</td></tr>';
+ const ranks=d.ranking||[]; $('ranking').innerHTML=ranks.map((x,i)=>{const rank=ranks.findIndex(y=>Number(y.score)===Number(x.score))+1;return `<tr><td>${ranks.filter(y=>Number(y.score)===Number(x.score)).length>1?'並列':''}${rank}</td><td>${esc(x.name)}${x.alive?'':' 💀'}</td><td>${x.score} <span class="muted">(積分 ${x.points})</span></td></tr>`}).join('')||'<tr><td colspan="3">尚無參賽者</td></tr>';
  $('logs').innerHTML=(d.reports||[]).map(r=>`<div><b>第 ${r.day} 天</b><div style="white-space:pre-line">${esc(r.text)}</div></div>`).join('')||'<div class="muted">尚無戰報，結算後自動公開。</div>';
  setLogin();
 }
