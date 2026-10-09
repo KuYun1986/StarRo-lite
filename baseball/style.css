@@ -144,3 +144,24 @@
 @keyframes animeImpact{0%{opacity:1}100%{opacity:0}}
 .ballpark.anime-stage .result-flash{z-index:17;top:20%;left:45%;text-shadow:0 3px 8px #031127,0 0 15px #ffde73}
 @media(max-width:650px){.ballpark.anime-stage{aspect-ratio:1492/690;height:auto;min-height:210px}.ballpark.anime-stage .field-score{top:5px;right:5px}.ballpark.anime-stage .field-counter,.ballpark.anime-stage .field-next{bottom:4px;padding:3px 5px}.ballpark.anime-stage .strike-zone{top:58%;left:50.5%;width:12%;height:27%}.ballpark.anime-stage .strike-zone span{font-size:8px;bottom:-22px}.ballpark.anime-stage .result-flash{font-size:20px}}
+
+/* v20261009i: widescreen single-column gameplay, no sidebar collision */
+.shell{max-width:1260px;margin:0 auto;padding:20px 22px}
+.layout{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:20px}
+.layout>.left,.layout>.right{width:100%;min-width:0;max-width:100%;gap:16px}
+.layout>.right{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+.layout>.right>.panel{min-width:0;overflow-wrap:anywhere}
+.layout>.right>.leaderboard{grid-row:span 2}
+.panel.stadium{width:100%;min-width:0;padding:18px 20px;overflow:hidden}
+.ballpark.anime-stage{display:block;width:100%!important;max-width:100%!important;min-width:0!important;aspect-ratio:1492/690;height:auto!important;min-height:0!important;background-size:100% 100%;overflow:hidden}
+.ballpark.anime-stage .field-score{top:12px;right:12px;max-width:55%;transform:none}
+.ballpark.anime-stage .field-counter,.ballpark.anime-stage .field-next{bottom:12px}
+.ballpark.anime-stage .field-counter{left:12px}.ballpark.anime-stage .field-next{right:12px}
+.ballpark.anime-stage .strike-zone{left:50.5%;top:58%}
+.stadium .controls{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.stadium .controls button{width:100%;min-width:0}
+.stadium .swing-cue{margin-top:14px}
+.layout .identity{max-width:100%}
+@media(min-width:900px){.layout>.right{grid-template-columns:1fr 1.15fr}.layout>.right>.leaderboard{grid-column:2;grid-row:1 / span 2}.layout>.right>.stats{grid-column:1;grid-row:1}.layout>.right>#baseballAdmin{grid-column:1;grid-row:2}.layout>.right>.share{grid-column:1 / -1}}
+@media(max-width:899px){.layout>.right{grid-template-columns:1fr 1fr}.layout>.right>.leaderboard{grid-row:auto}}
+@media(max-width:650px){.shell{padding:10px}.layout{gap:12px}.layout>.right{grid-template-columns:minmax(0,1fr)}.panel.stadium{padding:10px}.ballpark.anime-stage{min-height:0!important}.ballpark.anime-stage .field-score{top:5px;right:5px;max-width:70%}.ballpark.anime-stage .field-counter,.ballpark.anime-stage .field-next{bottom:4px}.stadium .controls{gap:8px}.stadium .controls button{min-height:56px}.layout>.right>.leaderboard,.layout>.right>.stats,.layout>.right>#baseballAdmin{grid-column:auto;grid-row:auto}}
