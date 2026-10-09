@@ -39,7 +39,7 @@ function tick(t){
  $('strikeZone').classList.toggle('ready',ready);
  $('swingCue').classList.toggle('ready',ready);
  $('strikeCue').textContent=ready?'🔥 現在揮棒！':'🎯 球進框中央時揮棒';
- $('swingCue').textContent=ready?'🔥 現在揮棒！按空白鍵或點「揮棒」':'⚾ 等球靠近本壘，瞄準框中央！';
+ $('swingCue').textContent=ready?'🔥 球進框了！現在揮棒！':'🎯 球進框時可揮棒';
  $('ball').style.opacity='1';$('ball').style.left=(54-3.5*p)+'%';$('ball').style.top=(52+13*p)+'%';
  $('ball').style.transform='scale('+(0.5+p*2.2)+')';
  if(p>=1){swing(true);return}raf=requestAnimationFrame(tick);
