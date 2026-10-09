@@ -48,6 +48,22 @@ function render(){
  $('chosen').textContent=submitted?`今日已提交：${ACTIONS.find(x=>x[0]===submitted.kind)?.[2]||''}（截止前可更改）`:'尚未提交今日行動';
  const ally=d.ally_info; $('allyInfo').textContent=ally?`🤝 盟友：${ally.name}｜📦 物資 ${ally.supply}｜🛡️ 護盾 ${ally.shield}`:'🤝 尚未結盟，無法查看其他玩家的物資與護盾。';
  const ranks=d.ranking||[]; $('ranking').innerHTML=ranks.map((x,i)=>{const rank=ranks.findIndex(y=>Number(y.score)===Number(x.score))+1;return `<tr><td>${ranks.filter(y=>Number(y.score)===Number(x.score)).length>1?'並列':''}${rank}</td><td>${esc(x.name)}${x.alive?'':' 💀'}</td><td>${!x.alive?'💀 已淘汰':x.id===d.me?.id?(d.me.player?.hp??'—'):(x.hp==null?'🔒 隱藏':x.hp)}</td><td>${x.score} <span class="muted">(積分 ${x.points})</span></td></tr>`}).join('')||'<tr><td colspan="4">尚無參賽者</td></tr>';
+ const ghost=d.ghost,ghostEnabled=!!(ghost&&g?.status==='running'&&new Date(g.deadline)>new Date());
+ $('ghostStatus').textContent=ghost?('👻 亡者積分 '+ghost.points+'｜剩餘詛咒 '+ghost.curses_left+' / 3 次'):(p?.alive?'目前仍存活，淘汰後才可參加地府活動。':'請登入並參加生存戰；淘汰後即可使用地府遊樂場。');
+ $('ghostControls').style.display=ghost?'block':'none';
+ const ghostTargets=(d.players||[]).filter(x=>x.alive);
+ const ghostOptions='<option value="">請選擇玩家</option>'+ghostTargets.map(x=>'<option value="'+esc(x.id)+'">'+esc(x.name)+'</option>').join('');
+ for(const id of ['ghostBetTarget','ghostCurseTarget']){$(id).innerHTML=ghostOptions;$(id).disabled=!ghostEnabled}
+ if(ghost){
+   if(ghost.bet){$('ghostBetTarget').value=ghost.bet.target;$('ghostPrediction').value=ghost.bet.prediction}
+   $('ghostBetInfo').textContent=ghost.bet?'今日已下注（18:00前可修改）':'今日尚未下注';
+   $('ghostCurseInfo').textContent=ghost.curse?'今日已使用詛咒（不可修改）':'剩餘詛咒 '+ghost.curses_left+' 次';
+   $('ghostSpinInfo').textContent=ghost.spin?('今日結果：'+ghost.spin.label+'（＋'+ghost.spin.reward+'分）'):'今日尚未轉動輪盤';
+   $('ghostBetSubmit').disabled=!ghostEnabled;
+   $('ghostCurseSubmit').disabled=!ghostEnabled||!!ghost.curse||ghost.curses_left<=0;
+   $('ghostSpin').disabled=!ghostEnabled||!!ghost.spin;
+ }
+ $('ghostRanking').innerHTML=(d.ghost_ranking||[]).map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+esc(x.name)+'</td><td>'+x.points+'</td></tr>').join('')||'<tr><td colspan="3">尚無亡者積分</td></tr>';
  $('logs').innerHTML=(d.reports||[]).map(r=>`<div><b>第 ${r.day} 天</b><div style="white-space:pre-line">${esc(r.text)}</div></div>`).join('')||'<div class="muted">尚無戰報，結算後自動公開。</div>';
  setLogin();
 }
