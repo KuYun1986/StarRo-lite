@@ -1,7 +1,7 @@
 const cfg=window.BASEBALL_CONFIG,$=id=>document.getElementById(id);
 const API='https://dakobubi-survival-backend-production.up.railway.app',KEY='dakobubi_survival_session';
 const pitchers=['古雲','一生','豪耶','石董','森上','挪威','光波','阿卷'];
-let isAdmin=false;let token=sessionStorage.getItem(KEY)||'',mine={points:0,hr:0,hits:0,ab:0},used=0,playing=false,lock=false,pitch=null,pitchStart=0,raf=0,day=0;
+let isAdmin=false,adminChecked=false;let token=sessionStorage.getItem(KEY)||'',mine={points:0,hr:0,hits:0,ab:0},used=0,playing=false,lock=false,pitch=null,pitchStart=0,raf=0,day=0;
 const start=cfg.eventStart,days=cfg.eventDays||7,limit=cfg.dailyAttempts||10;
 const end=new Date(Date.parse(start+'T00:00:00Z')+(days-1)*86400000).toISOString().slice(0,10);
 const safe=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -20,6 +20,7 @@ function render(){
  $('startBtn').disabled=!token||playing||lock||day<1||day>days||used>=limit;
  $('swingBtn').disabled=!playing||lock;
  $('baseballAdmin').hidden=!isAdmin;
+ if(token&&adminChecked&&!isAdmin)$('identityHelp').textContent='已登入 Discord，但此帳號未列入 Railway 的 ADMIN_DISCORD_IDS 管理員名單。';
  $('mode').textContent=token?'🟢 Discord 已登入':'🔐 尚未登入';
  $('discordLogin').textContent=token?'✓ Discord 已登入':'🎮 Discord 登入';
  $('discordLogin').disabled=!!token;
@@ -66,7 +67,7 @@ async function swing(auto=false){
 }
 async function refresh(){
  if(!token){render();return}
- try{const d=await api('/baseball/state');mine=d.me;used=d.used;day=d.day;isAdmin=!!d.admin;ranking(d.ranking);render()}catch(e){message(e.message);if(/登入|過期/.test(e.message)){token='';sessionStorage.removeItem(KEY);render()}}
+ try{const d=await api('/baseball/state');mine=d.me;used=d.used;day=d.day;isAdmin=!!d.admin;adminChecked=true;ranking(d.ranking);render()}catch(e){message(e.message);if(/登入|過期/.test(e.message)){token='';sessionStorage.removeItem(KEY);render()}}
 }
 $('startBtn').addEventListener('click',startPitch);
 $('swingBtn').addEventListener('click',()=>swing());
