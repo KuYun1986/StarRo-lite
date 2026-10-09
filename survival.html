@@ -39,7 +39,7 @@ function render(){
    const medals=['🥇','🥈','🥉'];
    $('eventTitle').textContent='🏆 活動結束｜生存戰前三名';
    $('eventText').style.whiteSpace='pre-line';
-   $('eventText').textContent=winners.length?winners.map((x,i)=>medals[i]+' 第'+(i+1)+'名：'+x.name+'｜'+x.score+'分').join('\n'):'本輪尚無參賽者';
+   $('eventText').textContent=(winners.length?winners.map((x,i)=>medals[i]+' 第'+(i+1)+'名：'+x.name+'｜'+x.score+'分').join('\n'):'本輪尚無參賽者')+'\n\n'+((d.ghost_ranking||[]).length?'👑 地府第一名：'+d.ghost_ranking[0].name+'｜'+d.ghost_ranking[0].points+'亡者積分':'👑 地府第一名：本輪無得分玩家');
  }else{
    $('eventTitle').textContent=d.event?.title||'等待開賽';
    $('eventText').textContent=d.event?.description||'請等待管理員開始新活動';
