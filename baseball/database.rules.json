@@ -1,0 +1,15 @@
+{
+  "rules": {
+    "events": {
+      "$eventId": {
+        "players": {
+          ".read": "auth != null",
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid",
+            ".validate": "newData.child('nickname').isString() && newData.child('nickname').val().length <= 22 && (!newData.child('points').exists() || (newData.child('points').isNumber() && newData.child('points').val() >= 0)) && (!newData.child('ab').exists() || (newData.child('ab').isNumber() && newData.child('ab').val() >= 0))"
+          }
+        }
+      }
+    }
+  }
+}
