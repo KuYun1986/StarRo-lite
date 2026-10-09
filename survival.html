@@ -14,7 +14,7 @@
 <script>
 'use strict';
 // 上傳 GitHub 前，將此網址換成你的 Railway 公開 HTTPS 網址（不要加最後的 /）。
-const API_BASE='https://YOUR-PROJECT.up.railway.app';
+const API_BASE='https://dakobubi-survival-backend-production.up.railway.app';
 const TOKEN_KEY='dakobubi_survival_session';
 const ACTIONS=[['A','🛡️','防守','HP +5 / 護盾 +15'],['B','📦','搜尋','物資 +15'],['C','⚔️','攻擊','消耗 5 物資'],['D','💰','掠奪','消耗 3 物資'],['E','❤️','治療','消耗 10 物資'],['F','🤝','結盟','雙方當天互選']];
 let token=sessionStorage.getItem(TOKEN_KEY)||'',snapshot=null,choice='',target='';
