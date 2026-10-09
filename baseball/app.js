@@ -1,57 +1,130 @@
-const cfg=window.BASEBALL_CONFIG;
-const $=id=>document.getElementById(id);
-const eventDays=Math.max(1,Number(cfg.eventDays)||7);
-const maxAttempts=Math.max(1,Number(cfg.dailyAttempts)||10);
-const safeId=String(cfg.eventId||'baseball').replace(/[^a-zA-Z0-9_-]/g,'-');
-const storageKey='starro-baseball-'+safeId;
-const nowTW=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-const toUTC=d=>Date.parse(d+'T00:00:00Z');
-const start=cfg.eventStart;
-const currentDay=()=>Math.floor((toUTC(nowTW())-toUTC(start))/86400000)+1;
-const today=()=>nowTW();
-const last=new Date(toUTC(start)+(eventDays-1)*86400000).toISOString().slice(0,10);
-const active=()=>currentDay()>=1&&currentDay()<=eventDays;
-const emptyStats=()=>({nickname:'',points:0,hr:0,hits:0,ab:0,daily:{},history:[]});
-let mine=emptyStats(), uid=null, db=null, fb=null, online=false, playing=false, lock=false;
-let pitchStart=0, duration=2000, raf=0, pitchCount=0, timer=0, lastPitchId=0;
-function readLocal(){try{return {...emptyStats(),...JSON.parse(localStorage.getItem(storageKey)||'{}')}}catch{return emptyStats()}}
-function localSave(){localStorage.setItem(storageKey,JSON.stringify(mine))}
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function used(){return Number(mine.daily?.[today()]||0)}
-function rem(){return Math.max(0,maxAttempts-used())}
-function mode(s){$('mode').textContent=s}
+const cfg=window.BASEBALL_CONFIG,$=id=>document.getElementById(id);
+const API='https://dakobubi-survival-backend-production.up.railway.app',KEY='dakobubi_survival_session';
+const pitchers=['古雲','一生','豪耶','石董','森上','挪威','光波','阿卷'];
+let swingPosition=0;let countdownActive=false;let isAdmin=false,adminChecked=false;let token=sessionStorage.getItem(KEY)||'',mine={points:0,hr:0,hits:0,ab:0},used=0,playing=false,lock=false,pitch=null,pitchStart=0,raf=0,day=0;
+const start=cfg.eventStart,days=cfg.eventDays||7,limit=cfg.dailyAttempts||10;
+const end=new Date(Date.parse(start+'T00:00:00Z')+(days-1)*86400000).toISOString().slice(0,10);
+const safe=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function message(s){$('playMsg').textContent=s}
+function discordLogin(){location.href=API+'/auth/login?baseball=true'}
+async function api(path,method='GET',body){
+ const r=await fetch(API+path,{method,headers:{Authorization:'Bearer '+token,...(body?{'Content-Type':'application/json'}:{})},body:body?JSON.stringify(body):undefined,cache:'no-store'});
+ const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.detail||'連線失敗');return d;
+}
+function ranking(rows){$('leaders').innerHTML=(rows||[]).map((r,i)=>'<div class="leader-row"><div class="rank">'+(['🥇','🥈','🥉'][i]||'#'+(i+1))+'</div><div><div class="leader-name">'+safe(r.nickname)+'</div><div class="leader-sub">全壘打 '+r.hr+' · 安打 '+r.hits+' · 打數 '+r.ab+'</div></div><div class="leader-score">'+r.points+' <small>分</small></div></div>').join('')||'<div class="empty">尚無成績</div>'}
 function render(){
- $('dates').textContent=start+' ～ '+last;
- $('day').textContent=currentDay()<1?'尚未開始':currentDay()>eventDays?'已結束':`第 ${currentDay()} / ${eventDays} 天`;
- $('remaining').textContent=rem()+' / '+maxAttempts;
- $('myPoints').textContent=Number(mine.points||0).toLocaleString('zh-TW');
- $('myHR').textContent=mine.hr||0;$('myHits').textContent=mine.hits||0;$('myAB').textContent=mine.ab||0;
- $('history').innerHTML=(mine.history||[]).slice(0,8).map(h=>`<span class="pill ${h.type==='全壘打'?'hr':''}">${escapeHtml(h.type)} ${Number(h.points)||0}分</span>`).join('')||'尚未開始';
- $('nickname').value=mine.nickname||'';
- $('startBtn').disabled=playing||lock||!mine.nickname||!active()||!rem();
+ $('dates').textContent=start+' ～ '+end;
+ $('day').textContent=day<1?'尚未開始':day>days?'已結束':'第 '+day+' / '+days+' 天';
+ $('remaining').textContent=Math.max(0,limit-used)+' / '+limit;
+ $('fieldUsed').textContent=used+' / '+limit;
+ $('fieldRemaining').textContent=Math.max(0,limit-used)+' / '+limit;
+ for(const [id,key] of [['fieldPoints','points'],['fieldHR','hr'],['fieldHits','hits'],['fieldAB','ab']])$(id).textContent=mine[key]||0;
+ for(const [id,key] of [['myPoints','points'],['myHR','hr'],['myHits','hits'],['myAB','ab']])$(id).textContent=mine[key]||0;
+ $('startBtn').disabled=!token||playing||lock||countdownActive||day<1||day>days||used>=limit;
  $('swingBtn').disabled=!playing||lock;
- $('identityHelp').textContent=online?'已連線共享排行榜（暱稱可更新；裝置以匿名帳號識別）':'試玩模式：成績只存在這台裝置，清除瀏覽器資料會遺失。';
+ $('baseballAdmin').hidden=!isAdmin;
+ $('mode').textContent=token?'🟢 Discord 已登入':'🔐 尚未登入';
+ $('discordLogin').textContent=token?'✓ Discord 已登入':'🎮 Discord 登入';
+ $('discordLogin').disabled=!!token;
+ $('identityHelp').textContent=!token?'請先登入 Discord 才能計分。':!adminChecked?'正在確認管理員權限…':isAdmin?'管理員身分已驗證，可以使用下方棒球管理系統。':'使用 Discord 帳號記錄成績，跨裝置同步。';
+ $('nickname').readOnly=true;
+ $('saveName').textContent=token?'已連結 Discord':'Discord 登入';
+ $('boardNote').textContent='Railway 即時排行榜 · 最多 30 名 · 依總分、全壘打、安打排序';
 }
-function leaderRows(records){const arr=records.filter(r=>r&&r.nickname).sort((a,b)=>(b.points||0)-(a.points||0)||(b.hr||0)-(a.hr||0)||(b.hits||0)-(a.hits||0)).slice(0,30);
- $('leaders').innerHTML=arr.map((r,i)=>`<div class="leader-row"><div class="rank">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</div><div><div class="leader-name">${escapeHtml(String(r.nickname).slice(0,22))}</div><div class="leader-sub">全壘打 ${Number(r.hr)||0} · 安打 ${Number(r.hits)||0} · 打數 ${Number(r.ab)||0}</div></div><div class="leader-score">${(Number(r.points)||0).toLocaleString('zh-TW')} <small>分</small></div></div>`).join('')||'<div class="empty">尚無成績</div>';
+function tick(t){
+ if(!playing)return;
+ const p=Math.min(1,(t-pitchStart)/pitch.duration);
+ swingPosition=p;
+ const ready=Math.abs(p-.5)<.065;
+ $('strikeZone').classList.toggle('ready',ready);
+ $('swingCue').classList.toggle('ready',ready);
+ $('strikeCue').textContent=ready?'🔥 現在揮棒！':'🎯 球進框中央時揮棒';
+ $('swingCue').textContent=ready?'🔥 現在揮棒！按空白鍵或點「揮棒」':'⚾ 等球靠近本壘，瞄準框中央！';
+ $('ball').style.opacity='1';$('ball').style.left=(54-3.5*p)+'%';$('ball').style.top=(52+13*p)+'%';
+ $('ball').style.transform='scale('+(0.5+p*2.2)+')';
+ if(p>=1){swing(true);return}raf=requestAnimationFrame(tick);
 }
-function tick(time){if(!playing)return;const p=Math.min(1,(time-pitchStart)/duration);$('needle').style.left=(p*100)+'%';$('ball').style.opacity='1';$('ball').style.left=(49 + 2*Math.sin(p*7))+'%';$('ball').style.top=(46+35*p)+'%';$('ball').style.transform=`rotate(-45deg) scale(${0.6+p*1.3})`;
- if(p>=1){hit(1,true);return}raf=requestAnimationFrame(tick)}
-function startPitch(){if(playing||lock||!active()||!rem()||!mine.nickname)return;cancelAnimationFrame(raf);clearTimeout(timer);playing=true;pitchCount++;lastPitchId++;duration=1800+Math.random()*550;$('status').textContent='投手投球中！';$('pitchNum').textContent='本次第 '+pitchCount+' 球';$('resultFlash').textContent='';$('startBtn').disabled=true;$('swingBtn').disabled=false;message('球接近中央時按「揮棒」或空白鍵！');pitchStart=performance.now();raf=requestAnimationFrame(tick)}
-function outcome(p,automatic){if(automatic||p<.29||p>.71)return {type:'揮空',points:0,hits:0,hr:0};let err=Math.abs(.5-p);let roll=Math.random();if(err<.035){if(roll<.78)return {type:'全壘打',points:100,hits:1,hr:1};if(roll<.9)return {type:'三壘安打',points:60,hits:1,hr:0};return {type:'二壘安打',points:40,hits:1,hr:0}}if(err<.09){if(roll<.38)return {type:'全壘打',points:100,hits:1,hr:1};if(roll<.62)return {type:'二壘安打',points:40,hits:1,hr:0};if(roll<.85)return {type:'一壘安打',points:20,hits:1,hr:0};return {type:'飛球出局',points:0,hits:0,hr:0}}if(roll<.15)return {type:'二壘安打',points:40,hits:1,hr:0};if(roll<.5)return {type:'一壘安打',points:20,hits:1,hr:0};return {type:'滾地出局',points:0,hits:0,hr:0}}
-async function hit(position=null,auto=false){if(!playing||lock)return;let p=position===null?Math.min(1,(performance.now()-pitchStart)/duration):position;playing=false;lock=true;cancelAnimationFrame(raf);$('swingBtn').disabled=true;$('bat').classList.remove('swing');void $('bat').offsetWidth;$('bat').classList.add('swing');const r=outcome(p,auto);$('resultFlash').textContent=r.type+' +'+r.points;$('status').textContent=r.type;message(online?'成績正在同步…':'本機成績儲存中…');
- try{if(online){const ref=fb.ref(db,`events/${safeId}/players/${uid}`);const tx=await fb.runTransaction(ref,old=>{const s={...emptyStats(),...(old||{})};const count=Number(s.daily?.[today()]||0);if(count>=maxAttempts||!active())return;const history=[{type:r.type,points:r.points,date:today()},...(Array.isArray(s.history)?s.history:[])].slice(0,12);return {...s,nickname:mine.nickname,points:(Number(s.points)||0)+r.points,hr:(Number(s.hr)||0)+r.hr,hits:(Number(s.hits)||0)+r.hits,ab:(Number(s.ab)||0)+1,daily:{...(s.daily||{}),[today()]:count+1},history}});if(!tx.committed){message('今天次數已用完，沒有扣除本次打擊。')}else{mine={...emptyStats(),...tx.snapshot.val()};message(r.type+`，獲得 ${r.points} 分！`)}}
- else{if(rem()>0){mine.points+=r.points;mine.hr+=r.hr;mine.hits+=r.hits;mine.ab++;mine.daily[today()]=used()+1;mine.history=[{type:r.type,points:r.points,date:today()},...mine.history].slice(0,12);localSave();message(r.type+`，獲得 ${r.points} 分！`);leaderRows([mine])}}
- }catch(err){console.error(err);message('網路儲存失敗，本球未記入成績，請重新整理再試。')}
- lock=false;render();if(rem()&&active()){timer=setTimeout(()=>{if(!playing&&!lock)startPitch()},1300)}else{message(active()?'今日 10 次打擊已完成，明天再來！':'活動尚未開始或已結束。')}
+async function startPitch(){
+ if(!token||playing||lock||countdownActive||used>=limit)return;
+ lock=true;render();message('正在抽選本次投手…');
+ try{
+  pitch=await api('/baseball/pitch','POST');
+  $('currentPitcher').textContent=pitch.pitcher;
+  $('pitchSpeed').textContent=(pitch.duration/1000).toFixed(2)+' 秒';
+  $('status').textContent='⚾ '+pitch.pitcher+' 準備投球';
+  $('pitchNum').textContent='第 '+(used+1)+' 球｜'+pitch.pitcher;
+  $('resultFlash').textContent='';
+  $('swingCue').textContent='⏳ 倒數 3 秒，準備看球揮棒';
+  countdownActive=true;render();
+  const cd=$('countdown');cd.hidden=false;
+  for(let n=3;n>=1;n--){
+   cd.textContent=n;
+   message('本次投手：'+pitch.pitcher+'｜'+n+' 秒後投球，準備按揮棒！');
+   await new Promise(resolve=>setTimeout(resolve,1000));
+  }
+  cd.hidden=true;countdownActive=false;
+  playing=true;lock=false;render();
+  $('status').textContent='⚾ '+pitch.pitcher+' 投球中！';
+  $('pitcherPerson').classList.remove('throwing');void $('pitcherPerson').offsetWidth;$('pitcherPerson').classList.add('throwing');
+  message('球速每球不同！白色移動指針對準中央固定白線時揮棒！');
+  pitchStart=performance.now();swingPosition=0;raf=requestAnimationFrame(tick);
+ }catch(e){countdownActive=false;$('countdown').hidden=true;lock=false;message(e.message+'（若上一球未完成，請稍後再試）');render()}
 }
-async function saveName(){let n=$('nickname').value.trim().replace(/[<>\n\r]/g,'').slice(0,22);if(!n){message('請輸入 Discord 暱稱。');return}if(playing||lock){message('請在本球結束後再改暱稱。');return}try{if(online){await fb.update(fb.ref(db,`events/${safeId}/players/${uid}`),{nickname:n})}mine.nickname=n;localSave();render();if(!online)leaderRows([mine]);message('暱稱已儲存，可以開始遊戲！')}catch(e){message('暱稱儲存失敗，請確認連線。')}}
-async function refresh(){if(online){try{const snap=await fb.get(fb.ref(db,`events/${safeId}/players`));leaderRows(Object.values(snap.val()||{}));message('排行榜已更新。')}catch(e){message('排行榜讀取失敗。')}}else leaderRows([mine])}
-$('saveName').addEventListener('click',saveName);$('startBtn').addEventListener('click',startPitch);$('swingBtn').addEventListener('click',()=>hit());$('refreshBtn').addEventListener('click',refresh);
-document.addEventListener('keydown',e=>{if(e.code==='Space'&&!['INPUT','TEXTAREA','BUTTON'].includes(document.activeElement?.tagName)){e.preventDefault();if(playing)hit()}});
-$('shareBtn').addEventListener('click',async()=>{const content=`⚾ 繁星仙境 ${eventDays}天全壘打挑戰賽\n👤 ${mine.nickname||'未設定'}\n🏆 總積分：${mine.points||0}\n💥 全壘打：${mine.hr||0}\n🏃 安打：${mine.hits||0}\n🎯 打數：${mine.ab||0}\n📅 ${currentDay()<1?'尚未開始':currentDay()>eventDays?'活動結束':'第 '+currentDay()+' 天'}\n🎮 ${location.href}`;try{await navigator.clipboard.writeText(content);message('戰績已複製，可貼到 Discord！')}catch{message('複製失敗，請使用 HTTPS 開啟網頁。')}});
-async function connect(){const c=cfg.firebase||{};if(!c.apiKey||!c.databaseURL||!c.projectId){mine=readLocal();mode('🧪 本機試玩');render();leaderRows([mine]);message('本機試玩模式：輸入暱稱即可打擊。');return}
- try{const [appMod,authMod,dbMod]=await Promise.all([import('https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js'),import('https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/11.10.0/firebase-database.js')]);const app=appMod.initializeApp(c);const auth=authMod.getAuth(app);const cred=await authMod.signInAnonymously(auth);uid=cred.user.uid;db=dbMod.getDatabase(app);fb=dbMod;const meRef=fb.ref(db,`events/${safeId}/players/${uid}`);const snapshot=await fb.get(meRef);mine={...emptyStats(),...(snapshot.val()||{})};online=true;mode('🟢 多人連線');$('boardNote').textContent='即時同步已啟用 · 最多顯示前 30 名。';fb.onValue(fb.ref(db,`events/${safeId}/players`),snap=>{leaderRows(Object.values(snap.val()||{}))},err=>{console.error(err);message('排行榜同步失敗，請檢查 Firebase 規則。')});render();message(mine.nickname?'歡迎回來！按開始投球。':'先設定 Discord 暱稱。')
- }catch(err){console.error(err);online=false;mine=readLocal();mode('⚠️ 連線失敗・試玩');render();leaderRows([mine]);message('Firebase 連線失敗，暫以本機試玩（不會同步至排行榜）。請檢查設定、匿名登入及資料庫規則。')}}
-render();connect();
+async function swing(auto=false){
+ if(!playing||lock)return;
+ const capturedPosition=auto?1:Math.min(1,(performance.now()-pitchStart)/pitch.duration);
+ playing=false;lock=true;cancelAnimationFrame(raf);
+ $('strikeZone').classList.remove('ready');$('swingCue').classList.remove('ready');
+ $('animeSwingFlash').classList.remove('active');void $('animeSwingFlash').offsetWidth;$('animeSwingFlash').classList.add('active');render();
+ $('bat').classList.remove('swing');void $('bat').offsetWidth;$('bat').classList.add('swing');
+ message('正在確認打擊結果…');
+ try{
+  const r=await api('/baseball/swing','POST',{pitchId:pitch.pitchId,position:capturedPosition});
+  mine=r.me;used=r.used;day=r.day;ranking(r.ranking);
+  $('resultFlash').textContent=r.type+' +'+r.points;
+  $('status').textContent=r.type;
+  $('history').insertAdjacentHTML('afterbegin','<span class="pill '+(r.type==='全壘打'?'hr':'')+'">'+safe(r.type)+' '+r.points+'分</span> ');
+  $('swingCue').textContent=r.type+'｜'+r.points+' 分';
+  message(r.type+'，獲得 '+r.points+' 分！'+(used>=limit?' 今日已完成10球。':' 按「開始投球」挑戰下一球。'));
+ }catch(e){message('本球紀錄失敗：'+e.message)}
+ pitch=null;lock=false;render();
+}
+async function refresh(){
+ if(!token){render();return}
+ try{
+ const d=await api('/baseball/state');
+ mine=d.me;used=d.used;day=d.day;ranking(d.ranking);
+ // Use the same admin identity source as the survival control panel.
+ // This also works if Railway is serving an older baseball/state response.
+ try{const survival=await api('/state');isAdmin=!!survival.me?.admin}
+ catch(e){isAdmin=!!d.admin}
+ adminChecked=true;render()
+}catch(e){message(e.message);if(/登入|過期/.test(e.message)){token='';sessionStorage.removeItem(KEY);render()}}
+}
+$('startBtn').addEventListener('click',startPitch);
+$('swingBtn').addEventListener('click',()=>swing());
+$('refreshBtn').addEventListener('click',refresh);
+$('resetBaseball').addEventListener('click',async()=>{
+ if(!isAdmin)return;
+ const v=prompt('此操作將永久清除棒球全部玩家分數與每日打擊次數，生存戰不受影響。\\n請輸入 RESET BASEBALL 確認：');
+ if(v!=='RESET BASEBALL')return;
+ const btn=$('resetBaseball');btn.disabled=true;
+ try{const r=await api('/baseball/admin/reset','POST',{confirm:v});$('adminMsg').textContent=r.message;await refresh();$('history').textContent='尚未開始';message('棒球成績已由管理員清空。')}
+ catch(e){$('adminMsg').textContent='操作失敗：'+e.message}
+ finally{btn.disabled=false}
+});
+$('saveName').addEventListener('click',()=>{if(!token)discordLogin()});
+$('discordLogin').addEventListener('click',discordLogin);
+document.addEventListener('keydown',e=>{if(e.code==='Space'&&!['INPUT','TEXTAREA','BUTTON'].includes(document.activeElement?.tagName)){e.preventDefault();if(playing)swing()}});
+$('shareBtn').addEventListener('click',async()=>{const txt='⚾ 7天棒球挑戰賽\n🏆 '+mine.points+' 分\n💥 全壘打 '+mine.hr+' 支\n🏃 安打 '+mine.hits+' 支\n'+location.href.split('#')[0];try{await navigator.clipboard.writeText(txt);message('成績已複製，可以貼到 Discord！')}catch{message('複製失敗')}});
+async function init(){
+ if(location.hash.startsWith('#ticket=')){
+  try{const r=await fetch(API+'/auth/exchange',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ticket:decodeURIComponent(location.hash.slice(8))})});const d=await r.json();if(!r.ok)throw Error(d.detail||'登入失敗');token=d.token;sessionStorage.setItem(KEY,token)}catch(e){message(e.message)}
+  history.replaceState(null,'',location.pathname+location.search);
+ }
+ $('nickname').placeholder='Discord 帳號登入後自動識別';
+ $('nickname').value=token?'已登入 Discord':'尚未登入';
+ render();await refresh();
+ if(!token)message('直接按上方「Discord 登入」即可參賽，不用先進入極限生存戰。');
+}
+init();
