@@ -62,6 +62,7 @@ async function startPitch(){
   cd.hidden=true;countdownActive=false;
   playing=true;lock=false;render();
   $('status').textContent='⚾ '+pitch.pitcher+' 投球中！';
+  $('pitcherPerson').classList.remove('throwing');void $('pitcherPerson').offsetWidth;$('pitcherPerson').classList.add('throwing');
   message('球速每球不同！白色移動指針對準中央固定白線時揮棒！');
   pitchStart=performance.now();swingPosition=0;raf=requestAnimationFrame(tick);
  }catch(e){countdownActive=false;$('countdown').hidden=true;lock=false;message(e.message+'（若上一球未完成，請稍後再試）');render()}
