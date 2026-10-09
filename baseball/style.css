@@ -126,3 +126,21 @@
 .swing-cue.ready{background:#16734c;border-color:#8dffc3}
 @media(max-width:1100px){.layout{grid-template-columns:minmax(0,1fr)}.ballpark.broadcast{height:510px}}
 @media(max-width:650px){.ballpark.broadcast{height:370px}.ballpark.broadcast .illustrated-batter{width:165px;height:250px;left:0}.ballpark.broadcast .illustrated-pitcher{width:42px;height:67px;top:47%}.ballpark.broadcast .strike-zone{left:60%;top:58%;width:77px;height:94px}.ballpark.broadcast .stadium-title{font-size:12px;padding:8px}.ballpark.broadcast .stadium-title small{font-size:7px}.ballpark.broadcast .field-score{top:10px;right:8px}.field-score>div{padding:6px;min-width:42px}.field-score small{font-size:9px}.field-score b{font-size:16px}.ballpark.broadcast .field-counter,.ballpark.broadcast .field-next{padding:6px 8px;font-size:9px;bottom:8px}.ballpark.broadcast .field-counter strong,.ballpark.broadcast .field-next strong{font-size:12px}.stadium .controls button{font-size:16px;min-height:60px}}
+
+/* v20261009h — the actual reference artwork, enabled automatically once
+   baseball/baseball-stadium-anime.jpg is uploaded to this GitHub repo. */
+.ballpark.anime-stage{background-image:url('./baseball-stadium-anime.jpg'),url('./stadium-art.svg');background-position:center center;background-size:100% 100%;aspect-ratio:1492/690;height:auto;min-height:0}
+.ballpark.anime-stage .illustrated-batter,.ballpark.anime-stage .illustrated-pitcher{display:none!important}
+.ballpark.anime-stage .stadium-title{display:none}
+.ballpark.anime-stage .field-score{top:13px;right:13px;z-index:16;background:#061b38f2}
+.ballpark.anime-stage .field-counter,.ballpark.anime-stage .field-next{z-index:16;background:#061b38f2}
+.ballpark.anime-stage .strike-zone{left:50.5%;top:58%;width:11%;height:28%;transform:translateX(-50%);border:0;background:transparent;box-shadow:none;z-index:12}
+.ballpark.anime-stage .strike-zone .strike-center{display:none}
+.ballpark.anime-stage .strike-zone span{bottom:-24px;background:#092c54d9;color:#e6f6ff}
+.ballpark.anime-stage .strike-zone.ready{border:3px solid #70ffac;background:#55ff992c;box-shadow:0 0 36px #62ffa4,inset 0 0 28px #4cff8c88}
+.ballpark.anime-stage .ball{left:50%;top:49%;z-index:13;width:22px;height:22px}
+.ballpark.anime-stage .anime-swing-flash{position:absolute;inset:0;z-index:14;pointer-events:none;opacity:0;background:radial-gradient(circle at 50% 65%,#fffbd780,transparent 45%)}
+.ballpark.anime-stage .anime-swing-flash.active{animation:animeImpact .4s ease-out}
+@keyframes animeImpact{0%{opacity:1}100%{opacity:0}}
+.ballpark.anime-stage .result-flash{z-index:17;top:20%;left:45%;text-shadow:0 3px 8px #031127,0 0 15px #ffde73}
+@media(max-width:650px){.ballpark.anime-stage{aspect-ratio:1492/690;height:auto;min-height:210px}.ballpark.anime-stage .field-score{top:5px;right:5px}.ballpark.anime-stage .field-counter,.ballpark.anime-stage .field-next{bottom:4px;padding:3px 5px}.ballpark.anime-stage .strike-zone{top:58%;left:50.5%;width:12%;height:27%}.ballpark.anime-stage .strike-zone span{font-size:8px;bottom:-22px}.ballpark.anime-stage .result-flash{font-size:20px}}
