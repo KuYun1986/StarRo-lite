@@ -76,3 +76,25 @@
 @keyframes chibiPitch{0%{transform:translateX(-50%) rotate(-8deg)}50%{transform:translateX(-50%) rotate(14deg) translateY(6px)}100%{transform:translateX(-50%) rotate(0deg)}}
 .ballpark.illustrated .strike-zone{z-index:10}.ballpark.illustrated .ball{z-index:11}.ballpark.illustrated .countdown{z-index:13}.ballpark.illustrated .result-flash{z-index:12}
 @media(max-width:650px){.ballpark.illustrated .illustrated-batter{width:160px;height:250px;left:0;bottom:-2%;transform:none}.ballpark.illustrated .illustrated-pitcher{width:82px;height:128px;top:46%;transform:translateX(-50%)}.ballpark.illustrated .illustrated-batter.swing{animation:chibiBatterSwing .42s cubic-bezier(.2,.8,.2,1)}}
+
+/* v20261009f — correct depth, scale and baseball composition.
+   Pitcher is BEHIND the batting target; batter and bat are one connected SVG. */
+.ballpark.illustrated.cinematic{height:510px;background-position:center 48%;overflow:hidden}
+.ballpark.cinematic .illustrated-pitcher{top:39%;left:50%;width:75px;height:116px;transform:translateX(-50%);z-index:5;filter:drop-shadow(0 4px 3px #071b2970)}
+.ballpark.cinematic .illustrated-batter{left:3%;bottom:0;width:235px;height:355px;transform:none;z-index:9;filter:drop-shadow(3px 12px 8px #0616298c)}
+.ballpark.cinematic .strike-zone{left:65%;top:57%;width:105px;height:116px;transform:translateX(-50%);z-index:7;border:3px solid #a3e8ff;box-shadow:0 0 16px #2ab9ff;background:#55b7ff13}
+.ballpark.cinematic .strike-zone span{bottom:-29px}
+.ballpark.cinematic .ball{z-index:10}
+.ballpark.cinematic .illustrated-pitcher.throwing{animation:cinematicPitch .55s ease-in-out}
+@keyframes cinematicPitch{0%{transform:translateX(-50%) rotate(-5deg)}40%{transform:translateX(-50%) rotate(10deg)}100%{transform:translateX(-50%) rotate(0)}}
+.ballpark.cinematic .illustrated-batter.swing{animation:cinematicSwing .38s ease-out}
+@keyframes cinematicSwing{0%{transform:rotate(0)}30%{transform:rotate(-10deg)}65%{transform:rotate(8deg)}100%{transform:rotate(0)}}
+.ballpark.cinematic .result-flash{left:43%;top:27%;z-index:12}
+.ballpark.cinematic .stadium-title{background:#092a4cb8}
+@media(max-width:650px){
+ .ballpark.illustrated.cinematic{height:375px}
+ .ballpark.cinematic .illustrated-pitcher{top:40%;left:50%;width:52px;height:82px;transform:translateX(-50%)}
+ .ballpark.cinematic .illustrated-batter{left:0;bottom:0;width:147px;height:220px;transform:none}
+ .ballpark.cinematic .strike-zone{left:70%;top:55%;width:74px;height:82px}
+ .ballpark.cinematic .illustrated-batter.swing{animation:cinematicSwing .38s ease-out}
+}
