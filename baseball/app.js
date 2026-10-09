@@ -36,10 +36,12 @@ function tick(t){
  const p=Math.min(1,(t-pitchStart)/pitch.duration);
  swingPosition=p;
  const ready=Math.abs(p-.5)<.065;
+ const tier=Math.abs(p-.5)<.014?'hr':Math.abs(p-.5)<.036?'triple':Math.abs(p-.5)<.11?'double':p>=.29&&p<=.71?'single':'miss';
+ const zone=$('strikeZone');zone.classList.remove('tier-hr','tier-triple','tier-double','tier-single','tier-miss');zone.classList.add('tier-'+tier);
  $('strikeZone').classList.toggle('ready',ready);
  $('swingCue').classList.toggle('ready',ready);
  $('strikeCue').textContent=ready?'🔥 現在揮棒！':'🎯 球進框中央時揮棒';
- $('swingCue').textContent=ready?'🔥 球進框了！現在揮棒！':'🎯 球進框時可揮棒';
+ $('swingCue').textContent=ready?'🎯 球進框了！可以揮棒！':'🎯 球進框時可揮棒';
  $('ball').style.opacity='1';$('ball').style.left=(54-3.5*p)+'%';$('ball').style.top=(52+13*p)+'%';
  $('ball').style.transform='scale('+(0.5+p*2.2)+')';
  if(p>=1){swing(true);return}raf=requestAnimationFrame(tick);
@@ -82,6 +84,8 @@ async function swing(auto=false){
   const r=await api('/baseball/swing','POST',{pitchId:pitch.pitchId,position:capturedPosition});
   mine=r.me;used=r.used;day=r.day;ranking(r.ranking);
   $('resultFlash').textContent=r.type+' +'+r.points;
+ const hitColor=({'全壘打':'hr','三壘安打':'triple','二壘安打':'double','一壘安打':'single'})[r.type]||'miss';
+ $('resultFlash').classList.remove('result-hr','result-triple','result-double','result-single','result-miss');$('resultFlash').classList.add('result-'+hitColor);
   $('status').textContent=r.type;
   $('history').insertAdjacentHTML('afterbegin','<span class="pill '+(r.type==='全壘打'?'hr':'')+'">'+safe(r.type)+' '+r.points+'分</span> ');
   $('swingCue').textContent=r.type+'｜'+r.points+' 分';
