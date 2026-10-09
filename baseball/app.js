@@ -40,7 +40,7 @@ function tick(t){
  $('swingCue').classList.toggle('ready',ready);
  $('strikeCue').textContent=ready?'🔥 現在揮棒！':'🎯 球進框中央時揮棒';
  $('swingCue').textContent=ready?'🔥 現在揮棒！按空白鍵或點「揮棒」':'⚾ 等球靠近本壘，瞄準框中央！';
- $('ball').style.opacity='1';$('ball').style.left=(50+5*p)+'%';$('ball').style.top=(51+26*p)+'%';
+ $('ball').style.opacity='1';$('ball').style.left=(54-3.5*p)+'%';$('ball').style.top=(52+13*p)+'%';
  $('ball').style.transform='scale('+(0.5+p*2.2)+')';
  if(p>=1){swing(true);return}raf=requestAnimationFrame(tick);
 }
@@ -74,7 +74,8 @@ async function swing(auto=false){
  if(!playing||lock)return;
  const capturedPosition=auto?1:Math.min(1,(performance.now()-pitchStart)/pitch.duration);
  playing=false;lock=true;cancelAnimationFrame(raf);
- $('strikeZone').classList.remove('ready');$('swingCue').classList.remove('ready');render();
+ $('strikeZone').classList.remove('ready');$('swingCue').classList.remove('ready');
+ $('animeSwingFlash').classList.remove('active');void $('animeSwingFlash').offsetWidth;$('animeSwingFlash').classList.add('active');render();
  $('bat').classList.remove('swing');void $('bat').offsetWidth;$('bat').classList.add('swing');
  message('正在確認打擊結果…');
  try{
