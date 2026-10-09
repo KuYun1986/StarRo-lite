@@ -165,3 +165,28 @@
 @media(min-width:900px){.layout>.right{grid-template-columns:1fr 1.15fr}.layout>.right>.leaderboard{grid-column:2;grid-row:1 / span 2}.layout>.right>.stats{grid-column:1;grid-row:1}.layout>.right>#baseballAdmin{grid-column:1;grid-row:2}.layout>.right>.share{grid-column:1 / -1}}
 @media(max-width:899px){.layout>.right{grid-template-columns:1fr 1fr}.layout>.right>.leaderboard{grid-row:auto}}
 @media(max-width:650px){.shell{padding:10px}.layout{gap:12px}.layout>.right{grid-template-columns:minmax(0,1fr)}.panel.stadium{padding:10px}.ballpark.anime-stage{min-height:0!important}.ballpark.anime-stage .field-score{top:5px;right:5px;max-width:70%}.ballpark.anime-stage .field-counter,.ballpark.anime-stage .field-next{bottom:4px}.stadium .controls{gap:8px}.stadium .controls button{min-height:56px}.layout>.right>.leaderboard,.layout>.right>.stats,.layout>.right>#baseballAdmin{grid-column:auto;grid-row:auto}}
+
+/* v20261009j — solid realtime overlays mask pre-rendered artwork labels */
+.ballpark.anime-stage .field-score{top:10px!important;right:10px!important;max-width:none!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;width:min(390px,48%);background:#06182f!important;border:2px solid #64bfff!important;border-radius:12px!important;box-shadow:0 0 0 7px #06182f,0 7px 22px #041126dd!important;z-index:22!important;overflow:visible}
+.ballpark.anime-stage .field-score>div{padding:10px 5px!important;min-width:0!important;background:#06182f!important}
+.ballpark.anime-stage .field-score small{font-size:clamp(11px,1.15vw,15px)!important;font-weight:800!important;color:#d7ecff!important}
+.ballpark.anime-stage .field-score b{font-size:clamp(24px,3vw,39px)!important;line-height:1.18!important;color:#ffcc4d!important;font-variant-numeric:tabular-nums!important}
+.ballpark.anime-stage .field-counter,.ballpark.anime-stage .field-next{bottom:10px!important;z-index:22!important;width:160px!important;min-height:75px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px!important;border:2px solid #59bbff!important;border-radius:11px!important;background:#06182f!important;box-shadow:0 0 0 8px #06182f,0 4px 18px #06182fe0!important;color:#d7ebff!important;text-align:center}
+.ballpark.anime-stage .field-counter{left:10px!important}
+.ballpark.anime-stage .field-next{right:10px!important}
+.ballpark.anime-stage .field-counter span,.ballpark.anime-stage .field-next span{font-size:13px!important;font-weight:800!important}
+.ballpark.anime-stage .field-counter strong,.ballpark.anime-stage .field-next strong{font-size:29px!important;line-height:1.1!important;color:#fff!important;font-variant-numeric:tabular-nums!important}
+.ballpark.anime-stage .field-text{display:none!important}
+.ballpark.anime-stage .strike-zone span{display:none!important}
+.stadium .swing-cue{font-weight:900;font-size:19px;letter-spacing:1px}
+@media(max-width:650px){
+.ballpark.anime-stage .field-score{width:min(230px,58%);top:5px!important;right:5px!important;box-shadow:0 0 0 3px #06182f!important}
+.ballpark.anime-stage .field-score>div{padding:5px 2px!important}
+.ballpark.anime-stage .field-score small{font-size:9px!important}
+.ballpark.anime-stage .field-score b{font-size:clamp(15px,4vw,22px)!important}
+.ballpark.anime-stage .field-counter,.ballpark.anime-stage .field-next{bottom:4px!important;width:76px!important;min-height:41px!important;padding:3px!important;box-shadow:0 0 0 3px #06182f!important}
+.ballpark.anime-stage .field-counter{left:4px!important}.ballpark.anime-stage .field-next{right:4px!important}
+.ballpark.anime-stage .field-counter span,.ballpark.anime-stage .field-next span{font-size:9px!important}
+.ballpark.anime-stage .field-counter strong,.ballpark.anime-stage .field-next strong{font-size:15px!important}
+.stadium .swing-cue{font-size:15px}
+}
