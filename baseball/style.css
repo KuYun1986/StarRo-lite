@@ -41,3 +41,13 @@
 .ballpark .result-flash{z-index:10;transform:none;top:42%;left:10%;font-size:clamp(20px,4vw,32px)}
 .ballpark .countdown{z-index:12;background:#0c1b3588}
 @media(max-width:650px){.ballpark{height:330px}.ballpark .cartoon-batter{transform:scale(.72);transform-origin:bottom left;left:10%;bottom:9%}.ballpark .cartoon-pitcher{transform:translateX(-50%) scale(.82);transform-origin:top center}.ballpark .scoreboard{font-size:10px}}
+
+/* v20261009c - single visual swing cue in the actual field, no bottom meter */
+.swing-cue{margin:12px 2px 4px;padding:13px 16px;border:1px solid #4a81b1;border-radius:12px;background:#102b48;color:#b9e9ff;font-size:16px;font-weight:900;text-align:center;transition:background .12s}
+.swing-cue.ready{background:#176c48;border-color:#6cffac;color:#fff4ad;box-shadow:0 0 20px #55f4a766;animation:readyPulse .25s infinite alternate}
+@keyframes readyPulse{to{filter:brightness(1.3)}}
+.strike-zone{position:absolute;z-index:7;left:50%;top:53%;width:100px;height:100px;transform:translateX(-50%);border:3px solid #c6f4ff;border-radius:7px;box-shadow:0 0 12px #69d6ff, inset 0 0 20px #1d5c9677;background:#5ad2ff16;pointer-events:none}
+.strike-zone span{position:absolute;left:50%;bottom:-32px;transform:translateX(-50%);white-space:nowrap;background:#0d294acc;color:#d2f6ff;border-radius:6px;padding:4px 8px;font-size:11px;font-weight:900}
+.strike-center{position:absolute;left:50%;top:50%;width:18px;height:18px;border:3px solid #ffe17e;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 12px #ffe17e}
+.strike-zone.ready{border-color:#67ffa1;box-shadow:0 0 32px #43ff91,inset 0 0 32px #43ff9188;background:#43ff9140}.strike-zone.ready span{background:#1b8054;color:#fff;font-size:16px}
+@media(max-width:650px){.strike-zone{top:51%;width:76px;height:76px}}
