@@ -1,7 +1,7 @@
 const cfg=window.BASEBALL_CONFIG,$=id=>document.getElementById(id);
 const API='https://dakobubi-survival-backend-production.up.railway.app',KEY='dakobubi_survival_session';
 const pitchers=['古雲','一生','豪耶','石董','森上','挪威','光波','阿卷'];
-let token=sessionStorage.getItem(KEY)||'',mine={points:0,hr:0,hits:0,ab:0},used=0,playing=false,lock=false,pitch=null,pitchStart=0,raf=0,day=0;
+let isAdmin=false;let token=sessionStorage.getItem(KEY)||'',mine={points:0,hr:0,hits:0,ab:0},used=0,playing=false,lock=false,pitch=null,pitchStart=0,raf=0,day=0;
 const start=cfg.eventStart,days=cfg.eventDays||7,limit=cfg.dailyAttempts||10;
 const end=new Date(Date.parse(start+'T00:00:00Z')+(days-1)*86400000).toISOString().slice(0,10);
 const safe=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -18,6 +18,7 @@ function render(){
  for(const [id,key] of [['myPoints','points'],['myHR','hr'],['myHits','hits'],['myAB','ab']])$(id).textContent=mine[key]||0;
  $('startBtn').disabled=!token||playing||lock||day<1||day>days||used>=limit;
  $('swingBtn').disabled=!playing||lock;
+ $('baseballAdmin').hidden=!isAdmin;
  $('mode').textContent=token?'🟢 Discord 排行榜':'🔐 請登入 Discord';
  $('identityHelp').textContent=token?'使用 Discord 帳號記錄成績，跨裝置同步。':'請先登入 Discord 才能計分。';
  $('nickname').readOnly=true;
@@ -62,11 +63,20 @@ async function swing(auto=false){
 }
 async function refresh(){
  if(!token){render();return}
- try{const d=await api('/baseball/state');mine=d.me;used=d.used;day=d.day;ranking(d.ranking);render()}catch(e){message(e.message);if(/登入|過期/.test(e.message)){token='';sessionStorage.removeItem(KEY);render()}}
+ try{const d=await api('/baseball/state');mine=d.me;used=d.used;day=d.day;isAdmin=!!d.admin;ranking(d.ranking);render()}catch(e){message(e.message);if(/登入|過期/.test(e.message)){token='';sessionStorage.removeItem(KEY);render()}}
 }
 $('startBtn').addEventListener('click',startPitch);
 $('swingBtn').addEventListener('click',()=>swing());
 $('refreshBtn').addEventListener('click',refresh);
+$('resetBaseball').addEventListener('click',async()=>{
+ if(!isAdmin)return;
+ const v=prompt('此操作將永久清除棒球全部玩家分數與每日打擊次數，生存戰不受影響。\\n請輸入 RESET BASEBALL 確認：');
+ if(v!=='RESET BASEBALL')return;
+ const btn=$('resetBaseball');btn.disabled=true;
+ try{const r=await api('/baseball/admin/reset','POST',{confirm:v});$('adminMsg').textContent=r.message;await refresh();$('history').textContent='尚未開始';message('棒球成績已由管理員清空。')}
+ catch(e){$('adminMsg').textContent='操作失敗：'+e.message}
+ finally{btn.disabled=false}
+});
 $('saveName').addEventListener('click',()=>{if(!token)location.href=API+'/auth/login?baseball=true'});
 document.addEventListener('keydown',e=>{if(e.code==='Space'&&!['INPUT','TEXTAREA','BUTTON'].includes(document.activeElement?.tagName)){e.preventDefault();if(playing)swing()}});
 $('shareBtn').addEventListener('click',async()=>{const txt='⚾ 7天棒球挑戰賽\n🏆 '+mine.points+' 分\n💥 全壘打 '+mine.hr+' 支\n🏃 安打 '+mine.hits+' 支\n'+location.href.split('#')[0];try{await navigator.clipboard.writeText(txt);message('成績已複製，可以貼到 Discord！')}catch{message('複製失敗')}});
