@@ -190,3 +190,36 @@
 .ballpark.anime-stage .field-counter strong,.ballpark.anime-stage .field-next strong{font-size:15px!important}
 .stadium .swing-cue{font-size:15px}
 }
+
+/* v20261009k — cover the numbers baked into the background illustration.
+   Original printed UI is wider than the live HTML widgets; fully mask those zones. */
+.ballpark.anime-stage .field-score{
+  top:1.2%!important;right:0.9%!important;
+  width:32%!important;max-width:none!important;min-height:15%!important;
+  border:2px solid #59baff!important;border-radius:12px!important;
+  background:#06182f!important;box-shadow:0 0 0 9px #06182f!important;
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  align-items:stretch!important;z-index:30!important
+}
+.ballpark.anime-stage .field-score>div{background:#06182f!important;display:flex;flex-direction:column;justify-content:center;min-width:0!important;padding:8px 3px!important}
+.ballpark.anime-stage .field-score b{font-size:clamp(23px,2.9vw,38px)!important}
+.ballpark.anime-stage .field-counter,.ballpark.anime-stage .field-next{
+  bottom:1.5%!important;width:22%!important;min-height:13%!important;
+  background:#06182f!important;border:2px solid #59baff!important;
+  box-shadow:0 0 0 9px #06182f!important;z-index:30!important;
+  display:flex!important;flex-direction:column;justify-content:center;align-items:center
+}
+.ballpark.anime-stage .field-counter{left:1.2%!important}
+.ballpark.anime-stage .field-next{right:1.2%!important}
+.ballpark.anime-stage .field-counter strong,.ballpark.anime-stage .field-next strong{font-size:clamp(22px,2.8vw,37px)!important}
+.ballpark.anime-stage .field-counter span,.ballpark.anime-stage .field-next span{font-size:clamp(11px,1.2vw,15px)!important}
+@media(max-width:650px){
+ .ballpark.anime-stage .field-score{width:36%!important;min-height:16%!important;top:1%!important;right:1%!important;box-shadow:0 0 0 3px #06182f!important}
+ .ballpark.anime-stage .field-score>div{padding:3px 1px!important}
+ .ballpark.anime-stage .field-score small{font-size:8px!important}
+ .ballpark.anime-stage .field-score b{font-size:clamp(12px,3.5vw,19px)!important}
+ .ballpark.anime-stage .field-counter,.ballpark.anime-stage .field-next{width:24%!important;min-height:14%!important;bottom:1%!important;padding:2px!important;box-shadow:0 0 0 3px #06182f!important}
+ .ballpark.anime-stage .field-counter{left:1%!important}.ballpark.anime-stage .field-next{right:1%!important}
+ .ballpark.anime-stage .field-counter strong,.ballpark.anime-stage .field-next strong{font-size:clamp(13px,3.8vw,20px)!important}
+ .ballpark.anime-stage .field-counter span,.ballpark.anime-stage .field-next span{font-size:9px!important}
+}
