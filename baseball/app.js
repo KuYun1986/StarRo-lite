@@ -16,6 +16,9 @@ function render(){
  $('dates').textContent=start+' ～ '+end;
  $('day').textContent=day<1?'尚未開始':day>days?'已結束':'第 '+day+' / '+days+' 天';
  $('remaining').textContent=Math.max(0,limit-used)+' / '+limit;
+ $('fieldUsed').textContent=used+' / '+limit;
+ $('fieldRemaining').textContent=Math.max(0,limit-used)+' / '+limit;
+ for(const [id,key] of [['fieldPoints','points'],['fieldHR','hr'],['fieldHits','hits'],['fieldAB','ab']])$(id).textContent=mine[key]||0;
  for(const [id,key] of [['myPoints','points'],['myHR','hr'],['myHits','hits'],['myAB','ab']])$(id).textContent=mine[key]||0;
  $('startBtn').disabled=!token||playing||lock||countdownActive||day<1||day>days||used>=limit;
  $('swingBtn').disabled=!playing||lock;
@@ -37,7 +40,7 @@ function tick(t){
  $('swingCue').classList.toggle('ready',ready);
  $('strikeCue').textContent=ready?'🔥 現在揮棒！':'🎯 球進框中央時揮棒';
  $('swingCue').textContent=ready?'🔥 現在揮棒！按空白鍵或點「揮棒」':'⚾ 等球靠近本壘，瞄準框中央！';
- $('ball').style.opacity='1';$('ball').style.left=(50-2*p)+'%';$('ball').style.top=(48+18*p)+'%';
+ $('ball').style.opacity='1';$('ball').style.left=(50+5*p)+'%';$('ball').style.top=(51+26*p)+'%';
  $('ball').style.transform='scale('+(0.5+p*2.2)+')';
  if(p>=1){swing(true);return}raf=requestAnimationFrame(tick);
 }
