@@ -46,3 +46,31 @@ header{position:relative;overflow:hidden;min-height:145px;border-radius:18px;bac
 .nightmare-encounter:not([hidden]){display:flex;align-items:center;gap:18px;padding:15px;margin:12px 0;background:linear-gradient(110deg,#201630,#3d214b,#172941);border:2px solid #9969b9;border-radius:14px;box-shadow:0 0 24px #7b3d9740}.nightmare-encounter img{width:108px;height:110px;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 0 14px #b478dd)}.nightmare-encounter strong{display:block;color:#f5d4ff;font-size:19px}.nightmare-encounter small{display:block;margin-top:8px;color:#e7d8f4}
 
 .admin-test-controls .danger-action{background:#692a35;border:1px solid #e37b88;color:#fff;margin-top:10px}.admin-test-controls .danger-action:hover{background:#8c3443}
+
+/* V19 - guild victory and collective revival */
+.tower-victory,.tower-revival{position:relative;overflow:hidden;text-align:center;border-radius:22px;padding:34px 28px;margin:0 0 22px}
+.tower-victory[hidden],.tower-revival[hidden]{display:none}
+.tower-victory{border:2px solid #f4ca74;background:radial-gradient(ellipse at 50% 0%,rgba(254,205,101,.34),transparent 52%),linear-gradient(135deg,#45305c,#122c51 48%,#29204b);box-shadow:0 0 42px rgba(255,202,89,.22),inset 0 0 35px rgba(255,215,111,.11)}
+.tower-victory:before{content:"✦  ✧  ✦  ✧  ✦  ✧  ✦";position:absolute;top:8px;left:0;right:0;letter-spacing:20px;color:#ffda8e;opacity:.65;animation:victoryTwinkle 3s ease-in-out infinite alternate}
+.victory-glow{font-size:25px;color:#ffdf93;letter-spacing:16px}.victory-crown{font-size:49px;margin:9px 0;filter:drop-shadow(0 0 17px #ffd476)}
+.victory-kicker{font-size:12px;font-weight:900;letter-spacing:4px;color:#f5d39a}
+.tower-victory h2{font-size:clamp(36px,6vw,70px);line-height:1.2;color:#ffe8a9;text-shadow:0 3px 0 #8e552b,0 0 26px #ffbf4c;margin:15px 0;animation:victoryTwinkle 3s ease-in-out infinite alternate}
+.victory-sub{font-size:clamp(16px,2vw,23px);font-weight:700;color:#fff4d9}
+.victory-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:25px auto;max-width:980px}
+.victory-stats>div{background:rgba(10,23,48,.8);border:1px solid #d4a866;border-radius:12px;padding:16px 8px}
+.victory-stats small{display:block;color:#d4c2a8;font-size:12px}.victory-stats b{display:block;color:#ffe2a0;font-size:clamp(17px,2.6vw,29px);margin-top:8px}
+.victory-reward{max-width:880px;margin:auto;padding:16px;border:1px solid #ffdb8b;border-radius:12px;background:rgba(249,202,112,.15);color:#ffe8b7;font-weight:800}
+.victory-thanks{font-weight:800;color:#ffe6b4;font-size:19px}
+.tower-revival{border:2px solid #bc6f97;background:radial-gradient(ellipse at 50% 0%,rgba(133,91,180,.28),transparent 58%),linear-gradient(130deg,#2c172d,#121d39 65%,#1c243b);box-shadow:0 0 34px rgba(171,92,167,.16)}
+.revive-moon{font-size:48px;filter:drop-shadow(0 0 20px #cba8fa)}
+.tower-revival h2{font-size:clamp(29px,5vw,48px);color:#ffb4c7;text-shadow:0 0 24px rgba(255,95,133,.35);margin:10px 0}
+.tower-revival>p{color:#d9d2e8;line-height:1.8}.tower-revival h3{font-size:clamp(19px,3vw,28px);color:#ffe0a2;margin-top:24px}
+.revive-progress{height:20px;max-width:620px;margin:14px auto;border-radius:30px;overflow:hidden;background:#151d37;border:1px solid #725b95}
+.revive-progress span{display:block;height:100%;width:0;background:linear-gradient(90deg,#7956d5,#e7a5ed,#ffca8e);transition:width .4s}
+.revive-count{font-size:18px}.revive-count b{color:#ffe6a9;font-size:25px}.revive-count span{color:#c7abfa;margin-left:10px}
+.tower-revival .revive-note{font-size:13px;color:#b8b5d1}
+#reviveVoteBtn{padding:17px 30px;border:2px solid #ffdc96;border-radius:13px;background:linear-gradient(#ffdb80,#e79b46);color:#38213c;font-size:19px;font-weight:900;box-shadow:0 6px 23px rgba(245,169,87,.24)}
+#reviveVoteBtn:disabled{background:#4e4564;border-color:#827795;color:#e5ddeb;opacity:.75}
+.tower-revival .revive-message{font-size:13px}
+@keyframes victoryTwinkle{from{filter:brightness(.86)}to{filter:brightness(1.24)}}
+@media(max-width:650px){.tower-victory,.tower-revival{padding:24px 12px}.victory-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.victory-glow{letter-spacing:7px}.tower-victory:before{letter-spacing:8px}}
