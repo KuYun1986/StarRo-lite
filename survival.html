@@ -34,7 +34,17 @@ function render(){
  $('connection').textContent=g?('第 '+Math.min(g.day,14)+' 天｜'+({running:'進行中',paused:'暫停中',finished:'已結束'}[g.status]||g.status)):'等待管理員開賽';
  $('day').textContent='DAY '+Math.min(g?.day||1,14)+' / 14';
  $('status').textContent=g?.deadline&&g.status==='running'?'下次結算：'+new Date(g.deadline).toLocaleString('zh-TW',{timeZone:'Asia/Taipei'}):'尚未開放行動';
- $('eventTitle').textContent=d.event?.title||'等待開賽';$('eventText').textContent=d.event?.description||'請等待管理員開始新活動';
+ if(g?.status==='finished'){
+   const winners=(d.ranking||[]).slice(0,3);
+   const medals=['🥇','🥈','🥉'];
+   $('eventTitle').textContent='🏆 活動結束｜生存戰前三名';
+   $('eventText').style.whiteSpace='pre-line';
+   $('eventText').textContent=winners.length?winners.map((x,i)=>medals[i]+' 第'+(i+1)+'名：'+x.name+'｜'+x.score+'分').join('\n'):'本輪尚無參賽者';
+ }else{
+   $('eventTitle').textContent=d.event?.title||'等待開賽';
+   $('eventText').textContent=d.event?.description||'請等待管理員開始新活動';
+ }
+
  for(const k of ['hp','shield','points'])$(k).textContent=p?.[k]??'—';$('supplies').textContent=p?.supply??'—';
  if(!choice&&submitted){choice=submitted.kind;target=submitted.target||''}
  const enabled=!!(me&&p?.alive&&g?.status==='running'&&new Date(g.deadline)>new Date());
@@ -65,6 +75,11 @@ function render(){
    $('ghostBetSubmit').disabled=!ghostEnabled;
    $('ghostCurseSubmit').disabled=!ghostEnabled||!!ghost.curse||ghost.curses_left<=0;
    $('ghostSpin').disabled=!ghostEnabled||!!ghost.spin;
+ }
+ if(g?.status==='finished'){
+   const champion=(d.ghost_ranking||[])[0];
+   $('ghostStatus').textContent=champion?'👑 地府第一名：'+champion.name+'｜'+champion.points+'亡者積分':'👑 地府第一名：本輪無得分玩家';
+   $('ghostControls').style.display='none';
  }
  $('ghostRanking').innerHTML=(d.ghost_ranking||[]).map((x,i)=>'<tr><td>'+(i+1)+'</td><td>'+esc(x.name)+'</td><td>'+x.points+'</td></tr>').join('')||'<tr><td colspan="3">尚無亡者積分</td></tr>';
  $('logs').innerHTML=(d.reports||[]).map(r=>`<div><b>第 ${r.day} 天</b><div style="white-space:pre-line">${esc(r.text)}</div></div>`).join('')||'<div class="muted">尚無戰報，結算後自動公開。</div>';
