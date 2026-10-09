@@ -223,3 +223,19 @@
  .ballpark.anime-stage .field-counter strong,.ballpark.anime-stage .field-next strong{font-size:clamp(13px,3.8vw,20px)!important}
  .ballpark.anime-stage .field-counter span,.ballpark.anime-stage .field-next span{font-size:9px!important}
 }
+
+/* v20261009l: hit-result palette. Actual result is still decided by server. */
+.hit-legend{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0 2px}
+.hit-legend-label{font-size:12px;color:#a9c2de;font-weight:800;margin-right:3px}
+.hit-key{border:1px solid currentColor;padding:7px 11px;border-radius:9px;font-size:13px;font-weight:900;background:#071d32}
+.hit-key.hr{color:#69f5a0}.hit-key.triple{color:#d0a4ff}.hit-key.double{color:#79c5ff}.hit-key.single{color:#ffe078}
+.ballpark.anime-stage .strike-zone.tier-hr.ready{border:3px solid #57ff91!important;background:#34e78045!important;box-shadow:0 0 34px #47ff8a,inset 0 0 25px #47ff8a!important}
+.ballpark.anime-stage .strike-zone.tier-triple.ready{border:3px solid #bb87ff!important;background:#9b68ff45!important;box-shadow:0 0 32px #aa79ff,inset 0 0 24px #aa79ff!important}
+.ballpark.anime-stage .strike-zone.tier-double.ready{border:3px solid #62bbff!important;background:#45aaff45!important;box-shadow:0 0 32px #4bb8ff,inset 0 0 24px #4bb8ff!important}
+.ballpark.anime-stage .strike-zone.tier-single.ready{border:3px solid #ffe06b!important;background:#ffd44d45!important;box-shadow:0 0 32px #ffd44d,inset 0 0 24px #ffd44d!important}
+.ballpark.anime-stage .result-flash.result-hr{color:#71ffa3!important;text-shadow:0 3px 5px #001b11,0 0 20px #38f78a!important}
+.ballpark.anime-stage .result-flash.result-triple{color:#d2aaff!important;text-shadow:0 3px 5px #1b0c35,0 0 20px #ae76ff!important}
+.ballpark.anime-stage .result-flash.result-double{color:#8bd0ff!important;text-shadow:0 3px 5px #051c35,0 0 20px #4caeff!important}
+.ballpark.anime-stage .result-flash.result-single{color:#ffe37b!important;text-shadow:0 3px 5px #362100,0 0 20px #ffd34b!important}
+.ballpark.anime-stage .result-flash.result-miss{color:#e8ecf4!important}
+@media(max-width:650px){.hit-legend{gap:5px}.hit-key{font-size:11px;padding:5px 7px}.hit-legend-label{width:100%;text-align:center}}
