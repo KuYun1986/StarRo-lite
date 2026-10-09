@@ -32,8 +32,8 @@ function tick(t){
  if(!playing)return;
  const p=Math.min(1,(t-pitchStart)/pitch.duration);
  $('needle').style.left=(p*100)+'%';
- $('ball').style.opacity='1';$('ball').style.left=(49+2*Math.sin(p*7))+'%';$('ball').style.top=(46+35*p)+'%';
- $('ball').style.transform='rotate(-45deg) scale('+(0.6+p*1.3)+')';
+ $('ball').style.opacity='1';$('ball').style.left=(50-13*p)+'%';$('ball').style.top=(58+24*p)+'%';
+ $('ball').style.transform='scale('+(0.6+p*1.3)+')';
  if(p>=1){swing(true);return}raf=requestAnimationFrame(tick);
 }
 async function startPitch(){
